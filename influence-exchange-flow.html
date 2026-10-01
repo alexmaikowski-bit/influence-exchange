@@ -185,30 +185,28 @@ body{
 .app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 .topline{height:2px;flex:0 0 2px;background:var(--grad);opacity:.95}
 
-/* ---------- masthead: wordmark + phase tabs + transport, one row ---------- */
-.mast{
-  display:flex;align-items:stretch;flex:0 0 auto;
-  border-bottom:1px solid var(--rule);
-  background:var(--mast-bg);
+.utils{position:absolute;top:11px;left:13px;z-index:11;display:flex;gap:7px}
+.util{
+  appearance:none;cursor:pointer;width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--rule-hi);color:var(--mute);
+  font-family:var(--mono);font-size:14px;line-height:1;
+  transition:color .18s,border-color .18s,transform .18s;
 }
-.mast h1{
-  font-family:var(--disp);font-weight:800;font-size:22px;
-  letter-spacing:-.035em;margin:0;line-height:1;white-space:nowrap;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:11px 24px 12px;border-right:1px solid var(--rule);
-  background:var(--grad);
-  -webkit-background-clip:text;background-clip:text;
-  color:transparent;
-}
-.eyebrow{
-  font-family:var(--mono);font-weight:500;font-size:8px;
-  letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
-  margin-bottom:6px;-webkit-text-fill-color:var(--dim);
-}
+.util:hover{color:var(--text);border-color:var(--wpp);transform:scale(1.08)}
+.util:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
 
-.controls{display:flex;gap:6px;align-items:center;margin-left:auto;padding:0 20px}
-.ctrl-gap{width:1px;height:18px;background:var(--rule);margin:0 3px}
-.ctrl.theme{min-width:84px;justify-content:center}
+.dock-nav{margin-left:auto;display:flex;gap:6px}
+.navbtn{
+  appearance:none;cursor:pointer;
+  background:var(--chip-bg);border:1px solid var(--chip-br);border-radius:3px;
+  color:var(--mute);font-family:var(--mono);font-size:11px;line-height:1;padding:5px 10px;
+  transition:color .18s,border-color .18s;
+}
+.navbtn:hover:not(:disabled){color:var(--text);border-color:var(--dim)}
+.navbtn:disabled{opacity:.3;cursor:default}
+.navbtn:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
+
 .ctrl{
   appearance:none;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
   text-transform:uppercase;font-weight:500;
@@ -417,7 +415,7 @@ path.flow.live{animation:march 1s linear infinite}
 /* ---------- dock ---------- */
 .dock[hidden]{display:none}
 .dock{
-  flex:0 0 auto;height:252px;display:grid;
+  flex:0 0 auto;height:300px;display:grid;
   grid-template-columns:minmax(0,1fr) 352px;
   background:var(--dock-bg);
   border-top:1px solid var(--rule-hi);
@@ -425,7 +423,7 @@ path.flow.live{animation:march 1s linear infinite}
   position:relative;
 }
 .dock > div{
-  padding:14px 24px 15px;border-right:1px solid var(--rule);gap:12px;
+  padding:19px 28px 21px;border-right:1px solid var(--rule);gap:16px;
   overflow:auto;min-width:0;position:relative;
   display:flex;flex-direction:column;
 }
@@ -480,7 +478,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 .d-lede{display:flex;align-items:flex-start;gap:20px;flex:0 0 auto}
 .d-lede .d-title{
-  font-family:var(--disp);font-weight:800;font-size:25px;letter-spacing:-.035em;
+  font-family:var(--disp);font-weight:800;font-size:27px;letter-spacing:-.035em;
   line-height:1.04;margin:0;color:var(--title);text-wrap:balance;
   flex:0 1 auto;max-width:44%;
 }
@@ -491,7 +489,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* why-it-matters sits at the foot of pane 1, so its presence never
    reflows anything above it */
-.d-left{display:flex;flex-direction:column;gap:12px;min-width:0}
+.d-left{display:flex;flex-direction:column;gap:14px;min-width:0}
 #dCallout{flex:0 0 auto}
 #dCallout:empty{display:none}
 .callout{
@@ -513,7 +511,7 @@ path.flow.live{animation:march 1s linear infinite}
 .handoff{
   background:linear-gradient(90deg, rgb(var(--nc-rgb) / 12%), transparent 76%);
   border-left:3px solid var(--nc);border-radius:0 4px 4px 0;
-  padding:10px 15px 11px;box-shadow:var(--handoff-sh);
+  padding:12px 17px 13px;box-shadow:var(--handoff-sh);
 }
 .handoff-lab{
   font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.17em;
@@ -522,9 +520,9 @@ path.flow.live{animation:march 1s linear infinite}
 .handoff-txt{font-size:14.5px;line-height:1.38;font-weight:500;color:var(--title);margin:0}
 .d-body{
   display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
-  gap:22px;align-items:start;flex:0 0 auto;
+  gap:28px;align-items:start;flex:0 0 auto;
 }
-.func{display:flex;flex-direction:column;gap:8px}
+.func{display:flex;flex-direction:column;gap:10px}
 .func .lab{margin:0}
 .plan:empty{display:none}
 .chips{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0}
@@ -604,7 +602,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* ---------- narrow / short ---------- */
 @media (max-width:1180px){
-  .dock{grid-template-columns:minmax(0,1fr) 300px}
+  .dock{grid-template-columns:minmax(0,1fr) 300px;height:330px}
   .d-body{grid-template-columns:minmax(0,1fr);gap:12px}
 }
 @media (max-width:860px){
@@ -615,9 +613,6 @@ path.flow.live{animation:march 1s linear infinite}
   .wfwrap{min-height:240px}
   .d-lede{flex-direction:column;gap:8px}
   .d-action{border-left:0;padding-left:0}
-  .mast{flex-wrap:wrap}
-  .mast h1{border-right:0;width:100%}
-  .controls{margin-left:0;border-left:0;padding:0 16px 10px}
 }
 @media (prefers-reduced-motion: reduce){
   *{transition:none !important;animation:none !important}
@@ -742,18 +737,11 @@ path.flow.live{animation:march 1s linear infinite}
 <div class="app">
   <div class="topline"></div>
 
-  <header class="mast">
-    <h1><span class="eyebrow">Project Roger Rabbit</span>Influence Exchange</h1>
-    <div class="controls">
-      <button class="ctrl" id="guideBtn" type="button">Guide</button>
-      <button class="ctrl theme" id="themeBtn" type="button"></button>
-      <span class="ctrl-gap"></span>
-      <button class="ctrl" id="prevBtn" type="button">&larr;</button>
-      <button class="ctrl" id="nextBtn" type="button">&rarr;</button>
-    </div>
-  </header>
-
   <div class="board" id="board">
+    <div class="utils">
+      <button class="util" id="guideBtn" type="button" aria-label="Show the guide" title="Guide">?</button>
+      <button class="util" id="themeBtn" type="button"></button>
+    </div>
     <div class="rail" id="rail"></div>
     <div class="scroller" id="scroller">
       <div class="canvas" id="canvas">
@@ -781,6 +769,10 @@ path.flow.live{animation:march 1s linear infinite}
         <span class="ph-actor" id="dActor"></span>
         <span class="ph-sep"></span>
         <span class="ph-act" id="dAct"></span>
+        <span class="dock-nav">
+          <button class="navbtn" id="prevBtn" type="button" aria-label="Previous step">&larr;</button>
+          <button class="navbtn" id="nextBtn" type="button" aria-label="Next step">&rarr;</button>
+        </span>
       </div>
 
       <div class="d-lede">
@@ -1464,7 +1456,7 @@ el.guideBtn.addEventListener("click", function(){ el.cover.hidden = false; });
 var root = document.documentElement;
 function syncThemeBtn(){
   var light = isLight();
-  el.themeBtn.innerHTML = light ? "\u263E&nbsp; Dark" : "\u2600&nbsp; Light";
+  el.themeBtn.innerHTML = light ? "\u263E" : "\u2600";
   el.themeBtn.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
 }
 function setTheme(mode){
