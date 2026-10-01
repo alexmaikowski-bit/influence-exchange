@@ -674,6 +674,57 @@ path.flow.live{animation:march 1s linear infinite}
 }
 .gate .gate-err[hidden]{display:none}
 
+/* ---------- all steps, as a list ---------- */
+.sheet{
+  position:fixed;inset:0;z-index:150;display:flex;align-items:center;justify-content:center;
+  background:var(--cover-bg);backdrop-filter:blur(4px);padding:26px;
+}
+.sheet[hidden]{display:none}
+.sheet-in{
+  position:relative;width:100%;max-width:1000px;max-height:88vh;overflow:auto;
+  background:var(--panel);border:1px solid var(--rule-hi);border-radius:7px;
+  padding:26px 30px 28px;box-shadow:0 40px 90px -40px #000;
+}
+.sheet-h{
+  font-family:var(--disp);font-weight:800;font-size:28px;letter-spacing:-.035em;
+  margin:7px 0 5px;color:var(--title);
+}
+.sheet-sub{font-size:13px;color:var(--mute);margin:0 0 22px}
+.sheet-close{
+  position:absolute;top:16px;right:18px;appearance:none;cursor:pointer;
+  width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--chip-bg);border:1px solid var(--rule-hi);color:var(--text);
+  font-size:19px;line-height:1;transition:all .18s;
+}
+.sheet-close:hover{color:var(--void);background:var(--wpp);border-color:var(--wpp)}
+.sheet-cols{column-count:2;column-gap:34px}
+@media (max-width:760px){.sheet-cols{column-count:1}}
+.sheet-act{break-inside:avoid;margin:0 0 20px;display:inline-block;width:100%}
+.sheet-act > p{
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--lab);margin:0 0 9px;
+  padding-bottom:7px;border-bottom:1px solid var(--rule);
+}
+.sheet-row{
+  display:flex;align-items:center;gap:11px;width:100%;
+  appearance:none;background:transparent;border:0;cursor:pointer;text-align:left;
+  padding:7px 9px;border-radius:4px;border-left:3px solid var(--rc);
+  transition:background .15s,transform .15s;
+}
+.sheet-row:hover{background:var(--hover);transform:translateX(2px)}
+.sheet-row:focus-visible{outline:2px solid var(--rc);outline-offset:1px}
+.sheet-row b{
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  color:var(--rc);flex:0 0 34px;
+}
+.sheet-row span{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.3}
+.sheet-row u{
+  text-decoration:none;margin-left:auto;padding-left:12px;flex:0 0 auto;
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--rc);opacity:.85;white-space:nowrap;
+}
+.sheet-row.star-on b::after{content:" \2605";color:var(--gold)}
+
 /* ---------- opening cover: 30 seconds of orientation, one click to clear ---------- */
 .cover{
   position:fixed;inset:0;z-index:100;
@@ -742,6 +793,16 @@ path.flow.live{animation:march 1s linear infinite}
   </form>
 </div>
 
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-in" id="sheetIn">
+    <button class="sheet-close" id="sheetClose" type="button" aria-label="Close">&times;</button>
+    <span class="eyebrow">Influence Exchange &middot; operating flow</span>
+    <h2 class="sheet-h">The fifteen steps</h2>
+    <p class="sheet-sub">Colour shows who acts. Click any step to open it.</p>
+    <div class="sheet-cols" id="sheetCols"></div>
+  </div>
+</div>
+
 <div class="cover" id="cover">
   <div class="cover-in">
     <span class="eyebrow">Project Roger Rabbit</span>
@@ -775,6 +836,7 @@ path.flow.live{animation:march 1s linear infinite}
 
   <div class="board" id="board">
     <div class="utils">
+      <button class="util" id="listBtn" type="button" aria-label="See the steps as a list" title="See all steps as a list"></button>
       <button class="util" id="guideBtn" type="button" aria-label="Show the guide" title="Guide">?</button>
       <button class="util" id="themeBtn" type="button"></button>
       <span class="utils-sep"></span>
@@ -936,7 +998,7 @@ var BUY = [
 {n:"12",plan:["Posting / paid access"],act:"Make",lens:["data"],lane:"publisher",title:"Publisher posts, grants access",
  action:"Publishes on the agreed handles and dates; supplies live links and paid amplification permissions.",
  out:"Published assets ready for the paid team to activate.",
- func:["Live links","Posting status","Asset IDs","Authorisation & expiry","Post-level asset IDs"],
+ func:["Live links","Posting status","Post-level asset IDs","Authorisation & expiry"],
  callout:"Paid rights travel with the asset — no separate chase for permissions.",
  wf:{kind:"links",name:"Live links & rights",fields:["Post URL","Asset ID","Paid authorisation","Expiry"]}},
 
@@ -1082,7 +1144,7 @@ var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+["board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","listBtn","sheet","sheetIn","sheetClose","sheetCols","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dAct","dPlan","dNext","dBody","funcToggle","funcBody","funcCount"].forEach(function(k){ el[k] = document.getElementById(k); });
 
@@ -1349,6 +1411,7 @@ el.prevBtn.disabled = true;
 document.addEventListener("keydown", function(e){
   if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   if (!el.gate.hidden) return;
+  if (!el.sheet.hidden){ if (e.key === "Escape") closeSheet(); return; }
   if (!el.cover.hidden){ el.cover.hidden = true; return; }
   if (e.key === "Escape" && cur >= 0){ select(-1,false); return; }
   if (e.key === "ArrowRight"){ if (cur<phase.steps.length-1) select(cur+1,true); }
@@ -1503,6 +1566,48 @@ function demoteHint(){
   el.hint.classList.remove("big");
 }
 function hideCover(){ el.cover.hidden = true; promoteHint(); }
+
+/* ---------------- all steps, as a list ---------------- */
+var ICON_LIST =
+  '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true" fill="none" '+
+  'stroke="currentColor" stroke-width="2.2" stroke-linecap="round">'+
+  '<line x1="9" y1="6" x2="20" y2="6"></line><line x1="9" y1="12" x2="20" y2="12"></line>'+
+  '<line x1="9" y1="18" x2="20" y2="18"></line>'+
+  '<circle cx="4.3" cy="6" r="1.5" fill="currentColor" stroke="none"></circle>'+
+  '<circle cx="4.3" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>'+
+  '<circle cx="4.3" cy="18" r="1.5" fill="currentColor" stroke="none"></circle></svg>';
+el.listBtn.innerHTML = ICON_LIST;
+
+function buildSheet(){
+  var steps = phase.steps, html = "", run = 0, i;
+  for (i = 0; i <= steps.length; i++){
+    var here = i < steps.length ? steps[i].act : null;
+    if (i === steps.length || here !== steps[run].act){
+      html += '<div class="sheet-act"><p>' + steps[run].act + '</p>';
+      for (var j = run; j < i; j++){
+        var st = steps[j];
+        html += '<button class="sheet-row' + (st.callout ? ' star-on' : '') + '" type="button" data-i="' + j + '"' +
+                ' style="--rc:var(' + LANES[st.lane].v + ')">' +
+                '<b>' + st.n + '</b><span>' + st.title + '</span>' +
+                '<u>' + LANES[st.lane].label + '</u></button>';
+      }
+      html += '</div>';
+      run = i;
+    }
+  }
+  el.sheetCols.innerHTML = html;
+  Array.prototype.forEach.call(el.sheetCols.querySelectorAll(".sheet-row"), function(b){
+    b.addEventListener("click", function(){
+      closeSheet();
+      select(+b.getAttribute("data-i"), true);
+    });
+  });
+}
+function openSheet(){ buildSheet(); el.sheet.hidden = false; el.sheetClose.focus(); }
+function closeSheet(){ el.sheet.hidden = true; }
+el.listBtn.addEventListener("click", openSheet);
+el.sheetClose.addEventListener("click", closeSheet);
+el.sheet.addEventListener("click", function(e){ if (e.target === el.sheet) closeSheet(); });
 el.cover.addEventListener("click", hideCover);
 el.coverGo.addEventListener("click", hideCover);
 el.guideBtn.addEventListener("click", function(){ el.cover.hidden = false; });
