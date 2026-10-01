@@ -381,13 +381,38 @@ path.flow.live{animation:march 1s linear infinite}
 
 .hint{
   position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:9px;
   font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--mute);background:var(--chip-bg);
   border:1px solid var(--chip-br);border-radius:3px;padding:9px 18px;
   pointer-events:none;z-index:10;white-space:nowrap;
+  transition:bottom .5s cubic-bezier(.2,.8,.3,1), transform .5s cubic-bezier(.2,.8,.3,1),
+             padding .5s, font-size .5s, background .4s, border-color .4s, box-shadow .4s;
 }
 .hint[hidden]{display:none}
 .hint em{font-style:normal;color:var(--wpp)}
+.hint-sub::before{content:"\00b7";margin-right:9px;color:var(--chip-br)}
+.hint-x{
+  display:none;appearance:none;background:transparent;border:0;cursor:pointer;
+  color:var(--dim);font-size:20px;line-height:1;padding:2px 6px;border-radius:3px;
+  position:absolute;top:8px;right:9px;
+}
+.hint-x:hover{color:var(--text);background:var(--hover)}
+.hint-x:focus-visible{outline:2px solid var(--wpp);outline-offset:1px}
+
+/* lands front and centre, then settles */
+.hint.big{
+  bottom:50%;transform:translate(-50%,50%);
+  flex-direction:column;gap:12px;
+  font-size:15px;letter-spacing:.14em;
+  padding:30px 44px 28px;border-radius:5px;
+  color:var(--title);background:var(--card);border-color:var(--wpp);
+  box-shadow:0 0 0 1px var(--wpp), 0 0 70px -12px var(--wpp), 0 26px 64px -34px #000;
+  pointer-events:auto;
+}
+.hint.big .hint-x{display:block}
+.hint.big .hint-sub{font-size:12px;letter-spacing:.16em}
+.hint.big .hint-sub::before{display:none}
 
 /* ---------- dock ---------- */
 .dock[hidden]{display:none}
@@ -739,7 +764,11 @@ path.flow.live{animation:march 1s linear infinite}
     <div class="edge r"></div>
     <button class="nudge l" id="nudgeL" type="button" aria-label="Scroll left">&#8249;</button>
     <button class="nudge r" id="nudgeR" type="button" aria-label="Scroll right">&#8250;</button>
-    <div class="hint" id="hint">15 steps &middot; click any one to see what happens &middot; <em>scroll right for the rest &rarr;</em></div>
+    <div class="hint" id="hint">
+      <button class="hint-x" id="hintX" type="button" aria-label="Dismiss">&times;</button>
+      <span class="hint-main">15 steps &middot; click any one to see what happens</span>
+      <em class="hint-sub">scroll right for the rest &rarr;</em>
+    </div>
   </div>
 
   <section class="dock" id="dock" aria-live="polite" hidden>
@@ -1017,7 +1046,7 @@ var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["board","dock","dockClose","hint","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+["board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dAct","dPlan","dNext"].forEach(function(k){ el[k] = document.getElementById(k); });
 
@@ -1182,6 +1211,7 @@ function select(i, scroll){
 
   el.dock.hidden = none;
   el.hint.hidden = !none;
+  if (!none) demoteHint();
 
   Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
     var ni = +n.getAttribute("data-i");
@@ -1274,6 +1304,7 @@ function ensureVisible(i){
 
 el.prevBtn.addEventListener("click", function(){ if (cur>0) select(cur-1,true); });
 el.dockClose.addEventListener("click", function(){ select(-1,false); });
+el.hintX.addEventListener("click", function(e){ e.stopPropagation(); demoteHint(); });
 el.nextBtn.addEventListener("click", function(){ if (cur<phase.steps.length-1) select(cur+1,true); });
 el.prevBtn.disabled = true;
 document.addEventListener("keydown", function(e){
@@ -1413,7 +1444,18 @@ el.gatePw.addEventListener("input", function(){ el.gateErr.hidden = true; });
   d.innerHTML = "<i></i>" + LANES[k].label + "<u>" + says[k] + "</u>";
   el.coverRoles.appendChild(d);
 });
-function hideCover(){ el.cover.hidden = true; }
+var hintTimer = null;
+function promoteHint(){
+  if (cur >= 0) return;
+  el.hint.classList.add("big");
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(demoteHint, 5000);
+}
+function demoteHint(){
+  clearTimeout(hintTimer);
+  el.hint.classList.remove("big");
+}
+function hideCover(){ el.cover.hidden = true; promoteHint(); }
 el.cover.addEventListener("click", hideCover);
 el.coverGo.addEventListener("click", hideCover);
 el.guideBtn.addEventListener("click", function(){ el.cover.hidden = false; });
