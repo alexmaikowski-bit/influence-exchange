@@ -404,7 +404,7 @@ path.flow.live{animation:march 1s linear infinite}
 .hint-x:hover{color:var(--text);background:var(--hover)}
 .hint-x:focus-visible{outline:2px solid var(--wpp);outline-offset:1px}
 
-/* lands front and centre, then settles */
+/* lands front and center, then settles */
 .hint.big{
   bottom:50%;transform:translate(-50%,50%);
   flex-direction:column;gap:12px;
@@ -438,7 +438,7 @@ path.flow.live{animation:march 1s linear infinite}
 .dock > div::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
 .dock > div::-webkit-scrollbar-track{background:transparent}
 
-/* the active lane's colour runs along the top of the dock */
+/* the active lane's color runs along the top of the dock */
 #dCol1::before{
   content:"";position:absolute;left:0;right:0;top:0;height:2px;
   background:var(--nc);box-shadow:var(--accent-line-sh);
@@ -536,7 +536,7 @@ path.flow.live{animation:march 1s linear infinite}
 .func-body{display:flex;flex-direction:column;gap:11px}
 .func-body[hidden]{display:none}
 
-/* reads as an invitation, in the step's own colour */
+/* reads as an invitation, in the step's own color */
 .func-toggle{
   appearance:none;cursor:pointer;align-self:flex-start;
   display:inline-flex;align-items:center;gap:11px;
@@ -798,7 +798,7 @@ path.flow.live{animation:march 1s linear infinite}
     <button class="sheet-close" id="sheetClose" type="button" aria-label="Close">&times;</button>
     <span class="eyebrow">Influence Exchange &middot; operating flow</span>
     <h2 class="sheet-h">The fifteen steps</h2>
-    <p class="sheet-sub">Colour shows who acts. Click any step to open it.</p>
+    <p class="sheet-sub">Color shows who acts. Click any step to open it.</p>
     <div class="sheet-cols" id="sheetCols"></div>
   </div>
 </div>
@@ -919,7 +919,7 @@ var LANES = {
   brandA:   {label:"Brand / IP holder",  v:"--publisher"},
   brandB:   {label:"Counterparty brand", v:"--client"}
 };
-/* every colour is read back out of the cascade, so a theme flip needs no
+/* every color is read back out of the cascade, so a theme flip needs no
    second set of values in here */
 var CS = getComputedStyle(document.documentElement);
 function cssVar(n){ return CS.getPropertyValue(n).trim(); }
@@ -930,8 +930,8 @@ var BUY = [
 {n:"01",plan:["Organization / access"],act:"Set up",lane:"publisher",title:"Publisher signs in",
  action:"Logs into the WPP-branded workspace with approved access.",
  out:"Publisher sees the properties, offers and campaigns they are permitted to see.",
- func:["Branded login","Organisation accounts","User permissions"],
- wf:{kind:"auth",name:"Sign in",fields:["Work email","Organisation","Continue with SSO"]}},
+ func:["Branded login","Organization accounts","User permissions"],
+ wf:{kind:"auth",name:"Sign in",fields:["Work email","Organization","Continue with SSO"]}},
 
 {n:"02",plan:["Profile / offer upload", "Audience / account data"],act:"Set up",lens:["data"],lane:"publisher",title:"Publisher creates profile",
  action:"Adds properties, handles, content examples and permitted audience and engagement data.",
@@ -948,7 +948,7 @@ var BUY = [
 
 {n:"04",act:"Set up",lens:["conn"],lane:"wpp",title:"WPP publishes listing",
  action:"Checks the profile and agreed offer details, then approves or requests corrections.",
- out:"Approved listing becomes discoverable to authorised users.",
+ out:"Approved listing becomes discoverable to authorized users.",
  func:["Review controls","Publication controls","Change requests","Connector: Goat / Obviously"],
  wf:{kind:"review",name:"Listing review",fields:["Profile check","Offer terms","Rights language"],cta:"Publish listing"}},
 
@@ -998,9 +998,9 @@ var BUY = [
 {n:"12",plan:["Posting / paid access"],act:"Make",lens:["data"],lane:"publisher",title:"Publisher posts, grants access",
  action:"Publishes on the agreed handles and dates; supplies live links and paid amplification permissions.",
  out:"Published assets ready for the paid team to activate.",
- func:["Live links","Posting status","Post-level asset IDs","Authorisation & expiry"],
+ func:["Live links","Posting status","Post-level asset IDs","Authorization & expiry"],
  callout:"Paid rights travel with the asset — no separate chase for permissions.",
- wf:{kind:"links",name:"Live links & rights",fields:["Post URL","Asset ID","Paid authorisation","Expiry"]}},
+ wf:{kind:"links",name:"Live links & rights",fields:["Post URL","Asset ID","Paid authorization","Expiry"]}},
 
 {n:"13",plan:["Posting / paid access"],act:"Measure",lens:["conn", "data"],lane:"paid",title:"Paid team amplifies",
  action:"Runs the approved content on the agreed social platforms, inside the usage rights.",
@@ -1049,7 +1049,7 @@ var EXCHANGE = [
 {n:"E1",act:"Join",lane:"brandA",title:"Property opts in",
  action:"Non-advertising-supported properties, IP holders and brands opt in to participate in the exchange.",
  out:"Entity is live on the platform and discoverable by every other opted-in entity.",
- func:["Self-serve onboarding","Eligibility check","Organisation accounts"],
+ func:["Self-serve onboarding","Eligibility check","Organization accounts"],
  wf:{kind:"auth",name:"Opt in",fields:["Entity type","Properties & handles","Accept exchange terms"]}},
 
 {n:"E2",act:"Join",lens:["data"],lane:"brandA",title:"Profile behaves like a creator profile",
