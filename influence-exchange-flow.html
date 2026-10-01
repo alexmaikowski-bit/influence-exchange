@@ -453,8 +453,8 @@ path.flow.live{animation:march 1s linear infinite}
   overflow:hidden;text-overflow:ellipsis;
 }
 
-.lede{display:flex;align-items:flex-start;gap:20px;flex:0 0 auto}
-.d-title{
+.d-lede{display:flex;align-items:flex-start;gap:20px;flex:0 0 auto}
+.d-lede .d-title{
   font-family:var(--disp);font-weight:800;font-size:25px;letter-spacing:-.035em;
   line-height:1.04;margin:0;color:var(--title);text-wrap:balance;
   flex:0 1 auto;max-width:44%;
@@ -588,7 +588,7 @@ path.flow.live{animation:march 1s linear infinite}
   .dock{grid-template-columns:minmax(0,1fr);height:auto}
   .dock #dCol1{border-right:0;border-bottom:1px solid var(--rule)}
   .wfwrap{min-height:240px}
-  .lede{flex-direction:column;gap:8px}
+  .d-lede{flex-direction:column;gap:8px}
   .d-action{border-left:0;padding-left:0}
   .mast{flex-wrap:wrap}
   .mast h1{border-right:0;width:100%}
@@ -643,10 +643,12 @@ path.flow.live{animation:march 1s linear infinite}
 .cover .lede b{color:var(--title);font-weight:600}
 .cover-grid{display:flex;flex-wrap:wrap;gap:26px 44px;margin-bottom:26px}
 .cover-blk{min-width:240px}
+.cover-blk.beats{flex:1 1 100%}
 .cover-blk > p{
   font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
   text-transform:uppercase;color:var(--dim);margin:0 0 9px;
 }
+.cover-blk.beats > p{font-size:10px;color:var(--wpp);margin-bottom:12px}
 .cover-roles{display:flex;flex-direction:column;gap:6px}
 .cover-role{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text)}
 .cover-role i{
@@ -654,17 +656,25 @@ path.flow.live{animation:march 1s linear infinite}
   background:var(--rc);box-shadow:var(--role-dot-sh);
 }
 .cover-role u{text-decoration:none;color:var(--dim);font-size:11.5px;margin-left:auto;padding-left:14px}
-.cover-acts{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.cover-acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .cover-act{
-  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--text);
-  border:1px solid var(--chip-br);background:var(--chip-bg);border-radius:3px;padding:4px 10px;
+  font-family:var(--disp);font-size:16px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--title);
+  border:1px solid var(--rule-hi);
+  background:linear-gradient(160deg, rgb(var(--wpp-rgb) / 9%), transparent);
+  border-radius:4px;padding:10px 18px;white-space:nowrap;
 }
-.cover-arrow{color:var(--dim);font-size:12px}
+.cover-arrow{color:var(--wpp);font-size:17px;font-weight:700}
 .cover-go{
   display:flex;align-items:center;gap:14px;flex-wrap:wrap;
   border-top:1px solid var(--rule);padding-top:20px;
 }
+@keyframes cta-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgb(var(--wpp-rgb) / 42%), 0 0 26px -8px rgb(var(--wpp-rgb) / 90%)}
+  50%    {box-shadow:0 0 0 13px rgb(var(--wpp-rgb) / 0%),  0 0 44px -4px rgb(var(--wpp-rgb) / 95%)}
+}
+#coverGo{animation:cta-pulse 2.3s ease-in-out infinite}
+#coverGo:hover{animation-play-state:paused}
 .cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
 </style>
 
@@ -686,7 +696,7 @@ path.flow.live{animation:march 1s linear infinite}
         <p>Four roles, four lanes</p>
         <div class="cover-roles" id="coverRoles"></div>
       </div>
-      <div class="cover-blk">
+      <div class="cover-blk beats">
         <p>Five beats of a deal</p>
         <div class="cover-acts">
           <span class="cover-act">Set up</span><span class="cover-arrow">&rarr;</span>
@@ -744,7 +754,7 @@ path.flow.live{animation:march 1s linear infinite}
         <span class="ph-act" id="dAct"></span>
       </div>
 
-      <div class="lede">
+      <div class="d-lede">
         <h2 class="d-title" id="dTitle"></h2>
         <p class="d-action" id="dAction"></p>
       </div>
