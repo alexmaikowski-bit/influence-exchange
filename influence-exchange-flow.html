@@ -420,7 +420,7 @@ path.flow.live{animation:march 1s linear infinite}
 /* ---------- dock ---------- */
 .dock[hidden]{display:none}
 .dock{
-  flex:0 0 auto;height:300px;display:grid;
+  flex:0 0 auto;height:304px;display:grid;
   grid-template-columns:minmax(0,1fr) 352px;
   background:var(--dock-bg);
   border-top:1px solid var(--rule-hi);
@@ -498,7 +498,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* why-it-matters sits at the foot of pane 1, so its presence never
    reflows anything above it */
-.d-left{display:flex;flex-direction:column;gap:14px;min-width:0}
+.d-left{display:flex;flex-direction:column;gap:12px;min-width:0}
 #dCallout{flex:0 0 auto}
 #dCallout:empty{display:none}
 .callout{
@@ -528,11 +528,36 @@ path.flow.live{animation:march 1s linear infinite}
 }
 .handoff-txt{font-size:14.5px;line-height:1.38;font-weight:500;color:var(--title);margin:0}
 .d-body{
-  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
-  gap:28px;align-items:start;flex:0 0 auto;
+  display:grid;grid-template-columns:minmax(0,1fr);
+  gap:16px;align-items:start;flex:0 0 auto;
 }
-.func{display:flex;flex-direction:column;gap:10px}
-.func .lab{margin:0}
+.d-body.open{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:28px}
+.func{display:flex;flex-direction:column;gap:12px}
+.func-body{display:flex;flex-direction:column;gap:11px}
+.func-body[hidden]{display:none}
+
+/* reads as an invitation, in the step's own colour */
+.func-toggle{
+  appearance:none;cursor:pointer;align-self:flex-start;
+  display:inline-flex;align-items:center;gap:11px;
+  font-family:var(--mono);font-size:10.5px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--nc);
+  background:linear-gradient(95deg, rgb(var(--nc-rgb) / 15%), transparent 72%), var(--chip-bg);
+  border:1px solid var(--nc);border-radius:4px;padding:10px 15px;
+  box-shadow:0 0 22px -14px var(--nc);
+  transition:box-shadow .2s, transform .16s;
+}
+.func-toggle:hover{
+  transform:translateY(-1px);
+  box-shadow:0 0 0 1px var(--nc), 0 0 30px -8px var(--nc);
+}
+.func-toggle:focus-visible{outline:2px solid var(--nc);outline-offset:3px}
+.ft-chev{font-size:15px;line-height:1;transition:transform .22s;display:inline-block}
+.func-toggle[aria-expanded="true"] .ft-chev{transform:rotate(90deg)}
+.ft-count{
+  background:var(--nc);color:var(--void);border-radius:9px;
+  padding:2px 8px;font-size:10px;letter-spacing:.03em;
+}
 .plan:empty{display:none}
 .chips{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0}
 .chips li{
@@ -611,7 +636,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* ---------- narrow / short ---------- */
 @media (max-width:1180px){
-  .dock{grid-template-columns:minmax(0,1fr) 300px;height:330px}
+  .dock{grid-template-columns:minmax(0,1fr) 300px;height:336px}
   .d-body{grid-template-columns:minmax(0,1fr);gap:12px}
 }
 @media (max-width:860px){
@@ -791,7 +816,7 @@ path.flow.live{animation:march 1s linear infinite}
         <p class="d-action" id="dAction"></p>
       </div>
 
-      <div class="d-body">
+      <div class="d-body" id="dBody">
       <div class="d-left">
         <div class="handoff">
           <p class="handoff-lab" id="dNext"></p>
@@ -801,9 +826,15 @@ path.flow.live{animation:march 1s linear infinite}
       </div>
 
       <div class="func">
-        <span class="lab">Functionality required</span>
-        <ul class="chips" id="dFunc"></ul>
-        <span class="plan" id="dPlan"></span>
+        <button class="func-toggle" id="funcToggle" type="button" aria-expanded="false">
+          <span class="ft-chev">&rsaquo;</span>
+          <span class="ft-lab">Functionality required</span>
+          <span class="ft-count" id="funcCount"></span>
+        </button>
+        <div class="func-body" id="funcBody" hidden>
+          <ul class="chips" id="dFunc"></ul>
+          <span class="plan" id="dPlan"></span>
+        </div>
       </div>
       </div>
     </div>
@@ -1051,7 +1082,7 @@ var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var el = {};
 ["board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
- "dFunc","dWire","dCallout","dAct","dPlan","dNext"].forEach(function(k){ el[k] = document.getElementById(k); });
+ "dFunc","dWire","dCallout","dAct","dPlan","dNext","dBody","funcToggle","funcBody","funcCount"].forEach(function(k){ el[k] = document.getElementById(k); });
 
 /* ---------------- render ---------------- */
 function elbow(x1,y1,x2,y2){
@@ -1267,6 +1298,8 @@ function select(i, scroll){
     ? "Hands to &rarr; " + nxt.n + " &middot; " + nxt.title
     : "Ends the flow &mdash; campaign closed";
   el.dFunc.innerHTML = s.func.map(function(f){ return "<li>"+f+"</li>"; }).join("");
+  el.funcCount.textContent = s.func.length;
+  syncFunc();
   el.dAct.textContent = s.act || "";
   el.dPlan.innerHTML = s.plan
     ? '<b>Partner input</b>' + s.plan.map(function(x){ return "<span>"+x+"</span>"; }).join("")
@@ -1447,6 +1480,15 @@ el.gatePw.addEventListener("input", function(){ el.gateErr.hidden = true; });
   d.innerHTML = "<i></i>" + LANES[k].label + "<u>" + says[k] + "</u>";
   el.coverRoles.appendChild(d);
 });
+/* open state is sticky across steps — one click covers the whole walkthrough */
+var funcOpen = false;
+function syncFunc(){
+  el.funcToggle.setAttribute("aria-expanded", funcOpen ? "true" : "false");
+  el.funcBody.hidden = !funcOpen;
+  el.dBody.classList.toggle("open", funcOpen);
+}
+el.funcToggle.addEventListener("click", function(){ funcOpen = !funcOpen; syncFunc(); });
+
 var hintTimer = null;
 function promoteHint(){
   if (cur >= 0) return;
