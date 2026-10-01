@@ -528,10 +528,9 @@ path.flow.live{animation:march 1s linear infinite}
 }
 .handoff-txt{font-size:14.5px;line-height:1.38;font-weight:500;color:var(--title);margin:0}
 .d-body{
-  display:grid;grid-template-columns:minmax(0,1fr);
-  gap:16px;align-items:start;flex:0 0 auto;
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:28px;align-items:start;flex:0 0 auto;
 }
-.d-body.open{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:28px}
 .func{display:flex;flex-direction:column;gap:12px}
 .func-body{display:flex;flex-direction:column;gap:11px}
 .func-body[hidden]{display:none}
@@ -566,9 +565,7 @@ path.flow.live{animation:march 1s linear infinite}
 }
 
 /* a reference, not a requirement — dashed, quiet, pinned to the pane foot */
-.plan{
-  margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;
-}
+.plan{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .plan:empty{display:none}
 .plan b{
   font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.2em;
@@ -1299,6 +1296,7 @@ function select(i, scroll){
     : "Ends the flow &mdash; campaign closed";
   el.dFunc.innerHTML = s.func.map(function(f){ return "<li>"+f+"</li>"; }).join("");
   el.funcCount.textContent = s.func.length;
+  funcOpen = false;
   syncFunc();
   el.dAct.textContent = s.act || "";
   el.dPlan.innerHTML = s.plan
@@ -1480,12 +1478,11 @@ el.gatePw.addEventListener("input", function(){ el.gateErr.hidden = true; });
   d.innerHTML = "<i></i>" + LANES[k].label + "<u>" + says[k] + "</u>";
   el.coverRoles.appendChild(d);
 });
-/* open state is sticky across steps — one click covers the whole walkthrough */
+/* collapsed on arrival at every step — an explicit choice each time */
 var funcOpen = false;
 function syncFunc(){
   el.funcToggle.setAttribute("aria-expanded", funcOpen ? "true" : "false");
   el.funcBody.hidden = !funcOpen;
-  el.dBody.classList.toggle("open", funcOpen);
 }
 el.funcToggle.addEventListener("click", function(){ funcOpen = !funcOpen; syncFunc(); });
 
