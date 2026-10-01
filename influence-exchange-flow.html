@@ -1,0 +1,1498 @@
+<meta charset="utf-8">
+<title>Influence Exchange Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+/* Single committed visual world: deep space + neon. Painted explicitly, so it
+   holds on either host ground. */
+:root{
+  --void:#04060B;
+  --ground:#070A11;
+  --panel:#0B1018;
+  --card:#111826;
+  --card-2:#0C121E;
+  --rule:#1A2231;
+  --rule-hi:#283349;
+  --text:#F3F6FB;
+  --mute:#8A95A6;
+  --dim:#5B6578;
+
+  --publisher:#3D8BFF; --publisher-rgb:61 139 255;
+  --creator:#22E0F0;   --creator-rgb:34 224 240;
+  --wpp:#00F08A;       --wpp-rgb:0 240 138;
+  --client:#B4F03C;    --client-rgb:180 240 60;
+  --paid:#9D7CFF;      --paid-rgb:157 124 255;
+  --gold:#FFD63D;
+
+  --grad:linear-gradient(100deg,#3D8BFF 0%,#22E0F0 46%,#00F08A 100%);
+
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --disp:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+
+  /* --- surfaces & depth, dark (the default world) --- */
+  --mode:dark;
+  --title:#FFFFFF;
+  --lab:#9AA7B9;
+  --action:#B5C0CF;
+  --card-on:linear-gradient(160deg,#17202F 0%,#0E1522 100%);
+  --branch-bg:#0A0F1ACC;
+  --chip-bg:#131B2A; --chip-br:#2E3A52; --chip-fg:#C6D1E0;
+  --gold-line:#FFD63D;
+  --wire:#39455C; --wire-live:#FFFFFF; --on-accent:#04060B; --glow:1;
+  --body-bg:
+    radial-gradient(900px 540px at 6% -14%, #0E2E5B33, transparent 62%),
+    radial-gradient(760px 480px at 96% 112%, #00603A33, transparent 62%),
+    #04060B;
+  --mast-bg:linear-gradient(180deg,#0A0F19 0%,#070A11 100%);
+  --dock-bg:linear-gradient(180deg,#0A0F19 0%,#05080E 100%);
+  --board-bg:radial-gradient(1100px 420px at 20% 0%, #0C2448AA, transparent 70%), #070A11;
+  --rail-bg:#070A1199;
+  --rail-hot:linear-gradient(90deg,#FFFFFF0A,transparent);
+  --rail-txt-sh:0 0 20px var(--lc);
+  --railbar-sh:0 0 14px 0 var(--lc);
+  --hover:#FFFFFF05; --sel:#FFFFFF08;
+  --ctrl-bg:#0F1623; --ctrl-hover:#141C2C;
+  --scroll-thumb:#23304A;
+  --inset-top:inset 0 1px 0 #FFFFFF0A;
+  --node-sh:0 2px 0 #00000055, 0 12px 28px -18px #000;
+  --node-sh-on:0 0 40px -6px var(--nc), 0 20px 44px -24px #000;
+  --peek-bg:#060A12F2;
+  --peek-sh:0 0 0 1px #00000066, 0 20px 50px -14px #000, 0 0 44px -14px var(--nc);
+  --ghost-bg:#070A11CC;
+  --token-fg:#FFFFFF;
+  --token-sh:0 0 0 3px #070A11, 0 0 14px 3px var(--tc,#fff), 0 0 36px 8px var(--tc,#fff);
+  --tag-sh:0 0 16px var(--creator);
+  --star-sh:drop-shadow(0 0 7px #FFD63D);
+  --dot-sh:0 0 12px 1px var(--nc);
+  --accent-line-sh:0 0 20px 0 var(--nc);
+  --handoff-sh:-16px 0 38px -28px var(--nc);
+  --callout-bg:linear-gradient(95deg, rgb(255 214 61 / 17%), rgb(255 214 61 / 4%) 66%, transparent), #0D1117;
+  --callout-br:rgb(255 214 61 / 34%);
+  --callout-fg:#FFF2CC;
+  --callout-sh:0 0 36px -18px var(--gold);
+  --wfwrap-bg:linear-gradient(180deg,#0C121D,#06090F);
+  --wf-bg:#0A0F1A;
+  --wf-sh:0 16px 38px -24px #000, inset 0 1px 0 #FFFFFF0A;
+  --wf-barbg:#0E1521;
+  --wf-fld:#0E1623; --wf-br:#2E3A52; --wf-fg:#9FAAB9;
+  --wf-av:#1A2434; --wf-ln:#202B3C;
+  --wfbtn-sh:0 0 22px -6px var(--nc);
+  --navi-sh:0 0 12px -2px var(--nc);
+  --bar-sh:0 0 14px -4px var(--nc);
+  --card-sel-sh:0 0 0 1px var(--nc), 0 0 24px -8px var(--nc);
+  --primary-sh:0 0 26px -6px #00F08A;
+  --primary-sh-h:0 0 34px -4px #22E0F0;
+  --cover-bg:rgb(4 6 11 / 95%);
+  --role-dot-sh:0 0 12px 1px var(--rc);
+}
+
+/* Light is a design, not an inversion. Dark is this page's own world and stays
+   the default on any OS; the host's explicit theme setting flips it, and the
+   in-page toggle (data-ui) wins over everything and is remembered. */
+:root[data-theme="light"]:not([data-ui]),
+:root[data-ui="light"]{
+  --mode:light;
+
+  /* porcelain ground; the board becomes the brightest surface, the exact
+     inverse of the dark world's figure/ground */
+  --void:#E9EDF3;
+  --ground:#FFFFFF;
+  --panel:#F5F8FB;
+  --card:#FFFFFF;
+  --card-2:#F6F9FC;
+  --card-on:linear-gradient(160deg,#FFFFFF 0%,#F1F6FF 100%);
+  --branch-bg:#FFFFFFCC;
+  --rule:#DCE3EC;
+  --rule-hi:#B9C5D6;
+  --text:#0C1220;
+  --title:#05080F;
+  --mute:#5A6477;
+  --dim:#8792A4;
+  --lab:#4A5466;
+  --action:#495466;
+  --chip-bg:#EEF2F8; --chip-br:#CCD6E4; --chip-fg:#2F3B4D;
+
+  /* the same spectrum, taken deep enough to carry on paper */
+  --publisher:#1554D6; --publisher-rgb:21 84 214;
+  --creator:#0E7490;   --creator-rgb:14 116 144;
+  --wpp:#047857;       --wpp-rgb:4 120 87;
+  --client:#4D7C0F;    --client-rgb:77 124 15;
+  --paid:#6D28D9;      --paid-rgb:109 40 217;
+  --gold:#B45309; --gold-line:#D97706;
+  --grad:linear-gradient(100deg,#1554D6 0%,#0E7490 46%,#047857 100%);
+
+  /* depth here is rings and soft tinted shadow, never glow */
+  --wire:#A3B0C4; --wire-live:#475569; --on-accent:#FFFFFF; --glow:0;
+  --body-bg:
+    radial-gradient(900px 540px at 6% -14%, #C9DBFA66, transparent 62%),
+    radial-gradient(760px 480px at 96% 112%, #BFEBD766, transparent 62%),
+    #E9EDF3;
+  --mast-bg:linear-gradient(180deg,#FFFFFF 0%,#F7FAFD 100%);
+  --dock-bg:linear-gradient(180deg,#FFFFFF 0%,#F2F6FB 100%);
+  --board-bg:radial-gradient(1100px 420px at 20% 0%, #E9F1FF, transparent 70%), #FFFFFF;
+  --rail-bg:#FBFCFE;
+  --rail-hot:linear-gradient(90deg,#0C122010,transparent);
+  --rail-txt-sh:none;
+  --railbar-sh:0 0 0 1px rgb(var(--lc-rgb) / 20%);
+  --hover:#0C12200A; --sel:#0C122012;
+  --ctrl-bg:#FFFFFF; --ctrl-hover:#EFF4FA;
+  --scroll-thumb:#C6D1E0;
+  --inset-top:inset 0 1px 0 #FFFFFF;
+  --node-sh:0 1px 0 #0C12200A, 0 8px 20px -14px #64748B;
+  --node-sh-on:0 10px 26px -12px var(--nc), 0 16px 34px -22px #64748B;
+  --peek-bg:#FFFFFFF7;
+  --peek-sh:0 0 0 1px #0C122010, 0 18px 44px -16px #64748BCC;
+  --ghost-bg:#FFFFFFD9;
+  --token-fg:#1E293B;
+  --token-sh:0 0 0 3px #FFFFFF, 0 0 0 4.5px var(--tc,#1E293B), 0 6px 18px -4px var(--tc,#1E293B);
+  --tag-sh:none;
+  --star-sh:drop-shadow(0 2px 3px rgb(180 83 9 / .4));
+  --dot-sh:0 0 0 3px rgb(var(--nc-rgb) / 18%);
+  --accent-line-sh:0 1px 8px 0 rgb(var(--nc-rgb) / 45%);
+  --handoff-sh:none;
+  --callout-bg:linear-gradient(95deg, rgb(217 119 6 / 14%), rgb(217 119 6 / 4%) 66%, transparent), #FFFCF4;
+  --callout-br:rgb(217 119 6 / 30%);
+  --callout-fg:#6B3E05;
+  --callout-sh:0 6px 20px -14px #D97706;
+  --wfwrap-bg:linear-gradient(180deg,#F4F8FC,#E8EFF6);
+  --wf-bg:#FFFFFF;
+  --wf-sh:0 14px 32px -22px #64748B, inset 0 1px 0 #FFFFFF;
+  --wf-barbg:#F1F5FA;
+  --wf-fld:#F8FAFD; --wf-br:#D4DDE9; --wf-fg:#5F6B7D;
+  --wf-av:#E3E9F1; --wf-ln:#DDE4EE;
+  --wfbtn-sh:0 4px 12px -6px var(--nc);
+  --navi-sh:none;
+  --bar-sh:none;
+  --card-sel-sh:0 0 0 1px var(--nc), 0 6px 16px -8px var(--nc);
+  --primary-sh:0 6px 18px -8px #047857;
+  --primary-sh-h:0 8px 22px -8px #0E7490;
+  --cover-bg:rgb(233 237 243 / 95%);
+  --role-dot-sh:0 0 0 3px rgb(var(--rc-rgb) / 20%);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--body-bg);
+  color:var(--text);
+  font-family:var(--body);
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topline{height:2px;flex:0 0 2px;background:var(--grad);opacity:.95}
+
+/* ---------- masthead: wordmark + phase tabs + transport, one row ---------- */
+.mast{
+  display:flex;align-items:stretch;flex:0 0 auto;
+  border-bottom:1px solid var(--rule);
+  background:var(--mast-bg);
+}
+.mast h1{
+  font-family:var(--disp);font-weight:800;font-size:22px;
+  letter-spacing:-.035em;margin:0;line-height:1;white-space:nowrap;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:11px 24px 12px;border-right:1px solid var(--rule);
+  background:var(--grad);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+}
+.eyebrow{
+  font-family:var(--mono);font-weight:500;font-size:8px;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
+  margin-bottom:6px;-webkit-text-fill-color:var(--dim);
+}
+
+/* ---------- phase tabs ---------- */
+.tabs{display:flex;align-items:stretch;overflow-x:auto;gap:0}
+.tab{
+  appearance:none;background:transparent;border:0;
+  border-right:1px solid var(--rule);
+  padding:9px 20px 8px;text-align:left;cursor:pointer;
+  color:var(--dim);font-family:var(--body);font-size:13px;font-weight:600;
+  white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:3px;
+  position:relative;transition:color .18s,background .18s;
+}
+.tab em{
+  font-style:normal;font-family:var(--mono);font-size:8.5px;
+  letter-spacing:.15em;text-transform:uppercase;font-weight:500;opacity:.85;
+}
+.tab::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:var(--tc,var(--wpp));opacity:0;transition:opacity .2s;
+}
+.tab:hover{color:var(--mute);background:var(--hover)}
+.tab[aria-selected="true"]{color:var(--text);background:var(--sel)}
+.tab[aria-selected="true"]::after{opacity:1;box-shadow:0 0 14px 1px var(--tc,var(--wpp))}
+.tab[aria-selected="true"] em{color:var(--tc,var(--wpp));opacity:1}
+.tab:focus-visible{outline:2px solid var(--wpp);outline-offset:-3px}
+
+.controls{display:flex;gap:6px;align-items:center;margin-left:auto;padding:0 20px;border-left:1px solid var(--rule)}
+.ctrl-gap{width:1px;height:18px;background:var(--rule);margin:0 3px}
+.ctrl.theme{min-width:84px;justify-content:center}
+.ctrl{
+  appearance:none;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:500;
+  background:var(--ctrl-bg);color:var(--mute);
+  border:1px solid var(--rule-hi);border-radius:4px;
+  padding:6px 11px;cursor:pointer;transition:all .18s;
+}
+.ctrl:hover:not(:disabled){color:var(--text);border-color:var(--dim);background:var(--ctrl-hover)}
+.ctrl:disabled{opacity:.3;cursor:default}
+.ctrl:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
+.ctrl.primary{
+  background:var(--grad);color:var(--on-accent);border:0;font-weight:700;
+  padding:7px 16px;box-shadow:var(--primary-sh);
+}
+.ctrl.primary:hover{box-shadow:var(--primary-sh-h);color:var(--on-accent)}
+
+/* ---------- capability lenses ---------- */
+.lenses{
+  display:flex;align-items:center;gap:7px;flex:0 0 auto;
+  padding:6px 20px;border-bottom:1px solid var(--rule);
+  background:var(--panel);overflow-x:auto;
+}
+.lens-lab{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);white-space:nowrap;margin-right:2px;
+}
+.lens{
+  appearance:none;cursor:pointer;white-space:nowrap;
+  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;
+  background:var(--chip-bg);color:var(--mute);
+  border:1px solid var(--chip-br);border-radius:3px;padding:4px 10px;
+  transition:all .16s;
+}
+.lens:hover{color:var(--text);border-color:var(--dim)}
+.lens:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
+.lens[aria-pressed="true"]{
+  background:var(--text);color:var(--void);border-color:var(--text);font-weight:700;
+}
+.lens-note{
+  font-size:12px;color:var(--lab);margin-left:6px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lens-note b{
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text);
+  margin-right:7px;font-weight:700;
+}
+
+/* ---------- acts: the five beats of the deal ---------- */
+.act{
+  position:absolute;height:19px;
+  border-top:1px solid var(--rule-hi);
+  border-left:1px solid var(--rule-hi);
+  border-right:1px solid var(--rule-hi);
+  display:flex;align-items:center;padding-left:9px;
+}
+.act i{
+  font-style:normal;font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--lab);
+  background:var(--ground);padding:0 7px;transform:translateY(-10px);
+}
+.act.hot{border-color:var(--nc)}
+.act.hot i{color:var(--nc)}
+
+/* ---------- board ---------- */
+.board{
+  flex:1 1 auto;min-height:0;display:grid;
+  grid-template-columns:164px minmax(0,1fr);
+  background:var(--board-bg);
+  border-bottom:1px solid var(--rule);
+}
+.rail{border-right:1px solid var(--rule);position:relative;overflow:hidden;background:var(--rail-bg)}
+.rail-lane{
+  position:absolute;left:0;right:0;display:flex;align-items:center;gap:10px;
+  padding-right:10px;border-bottom:1px solid var(--rule);
+  transition:background .25s;
+}
+.rail-bar{
+  width:3px;flex:0 0 3px;align-self:stretch;margin:12px 0;border-radius:2px;
+  background:var(--lc);box-shadow:var(--railbar-sh);opacity:.55;transition:opacity .25s;
+}
+.rail-lane span{
+  font-family:var(--disp);font-weight:700;font-size:10.5px;
+  letter-spacing:.11em;text-transform:uppercase;line-height:1.2;
+  color:var(--mute);transition:color .25s,text-shadow .25s;
+}
+.rail-lane.hot{background:var(--rail-hot)}
+.rail-lane.hot .rail-bar{opacity:1}
+.rail-lane.hot span{color:var(--lc);text-shadow:var(--rail-txt-sh)}
+
+.scroller{overflow-x:auto;overflow-y:hidden;position:relative}
+.scroller::-webkit-scrollbar{height:9px}
+.scroller::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:5px}
+.scroller::-webkit-scrollbar-track{background:transparent}
+.canvas{position:relative;height:100%}
+.lane-band{
+  position:absolute;left:0;right:0;border-bottom:1px solid var(--rule);
+  transition:background .25s;
+}
+.lane-band.hot{background:linear-gradient(90deg,rgb(var(--lc-rgb)/11%),rgb(var(--lc-rgb)/3%) 44%,transparent 80%)}
+.wires{position:absolute;top:0;left:0;overflow:visible;pointer-events:none}
+
+/* ---------- nodes ---------- */
+.node{
+  position:absolute;width:156px;
+  background:linear-gradient(160deg,var(--card) 0%,var(--card-2) 100%);
+  border:1px solid var(--rule-hi);border-radius:5px;
+  padding:7px 10px 8px;cursor:pointer;text-align:left;
+  font-family:var(--body);color:var(--text);
+  display:flex;flex-direction:column;gap:3px;
+  box-shadow:var(--node-sh);
+  transition:transform .16s cubic-bezier(.2,.8,.3,1),box-shadow .2s,border-color .2s;
+}
+.node::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  border-radius:5px 0 0 5px;background:var(--nc);opacity:.75;transition:opacity .2s,box-shadow .2s;
+}
+.node:hover{transform:translateY(-3px);border-color:var(--nc);box-shadow:0 0 0 1px var(--nc),0 18px 36px -20px var(--nc)}
+.node:hover::before{opacity:1;box-shadow:0 0 16px 1px var(--nc)}
+.node:focus-visible{outline:2px solid var(--nc);outline-offset:3px}
+.node .n{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.16em;color:var(--nc);
+}
+.node .t{font-size:11.5px;font-weight:600;line-height:1.24;letter-spacing:-.008em}
+.node[aria-current="true"]{
+  border-color:var(--nc);transform:translateY(-3px) scale(1.035);
+  background:var(--card-on);
+  box-shadow:0 0 0 1px var(--nc), var(--node-sh-on);
+}
+.node[aria-current="true"]::before{opacity:1;box-shadow:0 0 20px 2px var(--nc)}
+.node[aria-current="true"] .t{color:var(--title)}
+.node.branch{border-style:dashed;background:var(--branch-bg)}
+.node.branch .t{font-weight:500}
+.node.done{opacity:.62}
+.node.done .t{font-weight:500}
+/* lens state is declared last so it beats .done on steps already walked */
+.node.lit{box-shadow:0 0 0 1px var(--lab), var(--node-sh)}
+.node.off{opacity:.17;box-shadow:none;filter:grayscale(.85)}
+.node.off:hover{transform:none;box-shadow:none;border-color:var(--rule-hi)}
+.node.off .star{display:none}
+
+.star{
+  position:absolute;top:-7px;right:-6px;width:14px;height:14px;
+  background:var(--gold-line);filter:var(--star-sh);
+  clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
+}
+.peek{
+  position:absolute;top:calc(100% + 9px);left:-1px;width:228px;
+  background:var(--peek-bg);border:1px solid var(--nc);border-radius:5px;
+  padding:9px 11px;z-index:30;display:none;
+  box-shadow:var(--peek-sh);
+  backdrop-filter:blur(6px);
+}
+.node:hover .peek{display:block}
+.node[aria-current="true"] .peek{display:none}
+.peek b{
+  display:block;font-family:var(--mono);font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--nc);font-weight:500;margin-bottom:4px;
+}
+.peek span{display:block;font-size:11px;line-height:1.38;color:var(--text)}
+.peek u{
+  display:block;text-decoration:none;margin-top:7px;padding-top:6px;
+  border-top:1px solid var(--rule-hi);
+  font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:.02em;line-height:1.4;
+}
+.ghost{
+  position:absolute;width:156px;height:22px;border:1px dashed var(--nc);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  background:var(--ghost-bg);opacity:.9;
+}
+.ghost i{
+  font-style:normal;font-family:var(--mono);font-size:8px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--nc);
+}
+.token{
+  position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
+  border-radius:50%;background:var(--token-fg);opacity:0;pointer-events:none;z-index:20;
+  box-shadow:var(--token-sh);
+}
+.branch-tag{
+  position:absolute;font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--creator);background:var(--ground);
+  padding:0 7px;text-shadow:var(--tag-sh);
+}
+@keyframes march{to{stroke-dashoffset:-28}}
+path.flow.live{animation:march 1s linear infinite}
+
+/* ---------- dock ---------- */
+.dock{
+  flex:0 0 auto;height:254px;display:grid;
+  grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr) 316px;
+  background:var(--dock-bg);
+  border-top:1px solid var(--rule-hi);
+  box-shadow:var(--inset-top);
+  position:relative;
+}
+.dock > div{
+  padding:15px 22px 16px;border-right:1px solid var(--rule);
+  overflow:auto;min-width:0;position:relative;
+  display:flex;flex-direction:column;
+}
+.dock > div:last-child{border-right:0}
+.dock > div::-webkit-scrollbar{width:7px}
+.dock > div::-webkit-scrollbar-thumb{background:var(--scroll-thumb);border-radius:4px}
+.dock > div::-webkit-scrollbar-track{background:transparent}
+
+/* the active lane's colour runs along the top of the dock */
+#dCol1::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:var(--nc);box-shadow:var(--accent-line-sh);
+}
+
+/* every pane opens with the same header, so nothing jumps between steps */
+.pane-head{display:flex;align-items:center;gap:9px;margin:0 0 11px;flex:0 0 auto}
+.ph-lab{
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--lab);white-space:nowrap;
+}
+.ph-note{
+  font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--dim);margin-left:auto;white-space:nowrap;
+}
+.ph-dot{
+  width:8px;height:8px;flex:0 0 8px;border-radius:50%;
+  background:var(--nc);box-shadow:var(--dot-sh);
+}
+.ph-sep{width:1px;height:12px;flex:0 0 1px;background:var(--rule-hi)}
+.ph-act{
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--lab);white-space:nowrap;
+}
+.ph-actor{
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--nc);
+  overflow:hidden;text-overflow:ellipsis;
+}
+
+.watermark{
+  position:absolute;right:-10px;top:50%;transform:translateY(-46%);
+  font-family:var(--disp);font-weight:800;font-size:148px;letter-spacing:-.07em;
+  color:var(--nc);opacity:.045;line-height:1;pointer-events:none;user-select:none;
+}
+.d-title{
+  font-family:var(--disp);font-weight:800;font-size:26px;letter-spacing:-.035em;
+  line-height:1.06;margin:0 0 10px;color:var(--title);text-wrap:balance;position:relative;
+}
+.d-action{
+  font-size:14px;line-height:1.46;color:var(--action);margin:0;
+  max-width:42ch;position:relative;
+}
+
+/* why-it-matters sits at the foot of pane 1, so its presence never
+   reflows anything above it */
+#dCallout{margin-top:auto;flex:0 0 auto}
+.callout{
+  margin:16px 0 0;
+  display:flex;gap:10px;align-items:center;
+  background:var(--callout-bg);
+  border:1px solid var(--callout-br);
+  border-left:3px solid var(--gold-line);border-radius:0 4px 4px 0;
+  padding:9px 13px;box-shadow:var(--callout-sh);
+  position:relative;
+}
+.callout .cmark{
+  font-family:var(--mono);font-size:9px;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;flex:0 0 auto;
+}
+.callout p{margin:0;font-size:13px;font-weight:600;color:var(--callout-fg);line-height:1.36}
+
+/* the handoff is the payload of the whole diagram — treat it as an object */
+.handoff{
+  font-size:15px;line-height:1.4;font-weight:500;color:var(--title);
+  background:linear-gradient(90deg, rgb(var(--nc-rgb) / 13%), transparent 72%);
+  border-left:3px solid var(--nc);border-radius:0 4px 4px 0;
+  padding:11px 14px;margin:0 0 17px;flex:0 0 auto;
+  box-shadow:var(--handoff-sh);
+}
+.chips{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0;flex:0 0 auto}
+.chips li{
+  font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--chip-fg);
+  background:var(--chip-bg);border:1px solid var(--chip-br);border-radius:3px;padding:4px 9px;
+}
+
+/* a reference, not a requirement — dashed, quiet, pinned to the pane foot */
+.plan{
+  margin-top:auto;padding-top:10px;flex:0 0 auto;
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+  border-top:1px dashed var(--rule);
+}
+.plan:empty{display:none}
+.plan b{
+  font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);
+}
+.plan span{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--mute);
+  border:1px dashed var(--chip-br);border-radius:3px;padding:2px 8px;
+}
+
+/* ---------- wireframe ---------- */
+.wfwrap{
+  background:var(--wfwrap-bg);
+  display:flex;flex-direction:column;overflow:hidden !important;
+}
+.wf{
+  background:var(--wf-bg);border:1px solid var(--rule-hi);border-radius:5px;
+  flex:1 1 auto;display:flex;flex-direction:column;min-height:0;overflow:hidden;
+  box-shadow:var(--wf-sh);
+}
+.wf-bar{display:flex;align-items:center;gap:4px;padding:6px 10px;border-bottom:1px solid var(--rule);background:var(--wf-barbg)}
+.wf-dot{width:5px;height:5px;border-radius:50%;background:var(--rule-hi)}
+.wf-name{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--nc);margin-left:6px}
+.wf-body{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1 1 auto;min-height:0}
+.wf-row{display:flex;gap:5px}
+.wf-fld{
+  border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px;
+  font-family:var(--mono);font-size:9px;color:var(--wf-fg);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 0;
+}
+.wf-fld.k{border-style:dashed}
+.wf-btn{
+  background:var(--nc);color:var(--on-accent);font-family:var(--mono);font-size:9px;
+  letter-spacing:.11em;text-transform:uppercase;font-weight:700;
+  padding:4px 10px;align-self:flex-start;border-radius:3px;
+  box-shadow:var(--wfbtn-sh);
+}
+.wf-btn.ghostbtn{background:transparent;color:var(--mute);border:1px solid var(--wf-br);font-weight:500;box-shadow:none}
+.wf-nav{display:flex;flex-direction:column;gap:3px;width:42px;flex:0 0 42px}
+.wf-navi{height:8px;background:var(--wf-ln);border-radius:2px}
+.wf-navi.on{background:var(--nc);box-shadow:var(--navi-sh)}
+.wf-col{display:flex;flex-direction:column;gap:6px;flex:1 1 0;min-width:0}
+.wf-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.wf-card{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:5px;display:flex;flex-direction:column;gap:4px}
+.wf-card.sel{border-color:var(--nc);box-shadow:var(--card-sel-sh)}
+.wf-av{height:16px;background:var(--wf-av);border-radius:2px}
+.wf-ln{height:3px;background:var(--wf-ln);border-radius:2px}
+.wf-ln.s{width:60%}
+.wf-ln.q{width:38%}
+.wf-tag{font-family:var(--mono);font-size:7.5px;font-weight:500;letter-spacing:.1em;color:var(--nc);border:1px solid currentColor;border-radius:2px;padding:1px 4px;align-self:flex-start}
+.wf-bubble{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px;font-family:var(--mono);font-size:9px;color:var(--wf-fg);max-width:82%}
+.wf-bubble.me{align-self:flex-end;border-color:var(--nc);color:var(--text)}
+.wf-doc{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:8px;display:flex;flex-direction:column;gap:5px;flex:1 1 auto}
+.wf-sig{border-top:1px dashed var(--wf-br);padding-top:5px;margin-top:auto;display:flex;justify-content:space-between;align-items:center}
+.wf-chart{display:flex;align-items:flex-end;gap:3px;height:46px;border-bottom:1px solid var(--wf-br)}
+.wf-bar-v{flex:1 1 0;background:var(--wf-ln);border-radius:2px 2px 0 0}
+.wf-bar-v.on{background:var(--nc);box-shadow:var(--bar-sh)}
+.wf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.wf-kpi{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px;display:flex;flex-direction:column;gap:2px}
+.wf-kpi b{font-family:var(--mono);font-size:11.5px;color:var(--title)}
+.wf-kpi span{font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.wf-list{display:flex;flex-direction:column;gap:4px}
+.wf-li{display:flex;align-items:center;gap:6px;border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px}
+.wf-li .wf-ln{flex:1 1 auto}
+
+/* ---------- narrow / short ---------- */
+@media (max-width:1180px){
+  .dock{grid-template-columns:minmax(0,1fr) 288px;height:266px}
+  .dock #dCol1{grid-column:1;grid-row:1}
+  .dock #dCol2{grid-column:1;grid-row:2;border-right:1px solid var(--rule);padding-top:0}
+  .wfwrap{grid-column:2;grid-row:1 / 3}
+}
+@media (max-width:860px){
+  .app{height:auto;min-height:100dvh;overflow:visible}
+  .board{min-height:380px}
+  .dock{grid-template-columns:minmax(0,1fr);height:auto}
+  .dock #dCol1,.dock #dCol2{grid-column:1;grid-row:auto;border-right:0;border-bottom:1px solid var(--rule)}
+  .wfwrap{grid-column:1;grid-row:auto;min-height:240px}
+  .mast{flex-wrap:wrap}
+  .mast h1{border-right:0;width:100%}
+  .controls{margin-left:0;border-left:0;padding:0 16px 10px}
+  .watermark{font-size:96px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}
+
+/* ---------- opening cover: 30 seconds of orientation, one click to clear ---------- */
+.cover{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--cover-bg);backdrop-filter:blur(4px);
+  padding:28px;cursor:pointer;
+}
+.cover[hidden]{display:none}
+.cover-in{max-width:780px;width:100%;text-align:left}
+.cover .eyebrow{margin-bottom:10px}
+.cover h2{
+  font-family:var(--disp);font-weight:800;font-size:clamp(34px,5.4vw,56px);
+  letter-spacing:-.04em;line-height:.98;margin:0 0 16px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.cover .lede{
+  font-size:16px;line-height:1.5;color:var(--action);margin:0 0 24px;max-width:60ch;
+}
+.cover .lede b{color:var(--title);font-weight:600}
+.cover-grid{display:flex;flex-wrap:wrap;gap:26px 44px;margin-bottom:26px}
+.cover-blk{min-width:240px}
+.cover-blk > p{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 9px;
+}
+.cover-roles{display:flex;flex-direction:column;gap:6px}
+.cover-role{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text)}
+.cover-role i{
+  font-style:normal;width:9px;height:9px;flex:0 0 9px;border-radius:50%;
+  background:var(--rc);box-shadow:var(--role-dot-sh);
+}
+.cover-role u{text-decoration:none;color:var(--dim);font-size:11.5px;margin-left:auto;padding-left:14px}
+.cover-acts{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.cover-act{
+  font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text);
+  border:1px solid var(--chip-br);background:var(--chip-bg);border-radius:3px;padding:4px 10px;
+}
+.cover-arrow{color:var(--dim);font-size:12px}
+.cover-go{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  border-top:1px solid var(--rule);padding-top:20px;
+}
+.cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+</style>
+
+<div class="cover" id="cover">
+  <div class="cover-in">
+    <span class="eyebrow">Project Roger Rabbit</span>
+    <h2>Influence Exchange</h2>
+    <p class="lede">One platform where WPP Media buys <b>custom content</b> from publishers, creators and brands &mdash; with the production and payment ease of a creator deal. This is the operating flow a partner actually moves through.</p>
+    <div class="cover-grid">
+      <div class="cover-blk">
+        <p>Four roles, four lanes</p>
+        <div class="cover-roles" id="coverRoles"></div>
+      </div>
+      <div class="cover-blk">
+        <p>Five beats of a deal</p>
+        <div class="cover-acts">
+          <span class="cover-act">Set up</span><span class="cover-arrow">&rarr;</span>
+          <span class="cover-act">Match</span><span class="cover-arrow">&rarr;</span>
+          <span class="cover-act">Agree</span><span class="cover-arrow">&rarr;</span>
+          <span class="cover-act">Make</span><span class="cover-arrow">&rarr;</span>
+          <span class="cover-act">Measure</span>
+        </div>
+      </div>
+    </div>
+    <div class="cover-go">
+      <button class="ctrl primary" id="coverGo" type="button">Open the flow</button>
+      <span class="cover-hint">or click anywhere &middot; press Play to walk it</span>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="topline"></div>
+
+  <header class="mast">
+    <h1><span class="eyebrow">Project Roger Rabbit</span>Influence Exchange</h1>
+    <div class="tabs" role="tablist" aria-label="Platform phases" id="tabs"></div>
+    <div class="controls">
+      <button class="ctrl" id="guideBtn" type="button">Guide</button>
+      <button class="ctrl theme" id="themeBtn" type="button"></button>
+      <span class="ctrl-gap"></span>
+      <button class="ctrl" id="prevBtn" type="button">&larr;</button>
+      <button class="ctrl primary" id="playBtn" type="button">&#9654;&nbsp; Play flow</button>
+      <button class="ctrl" id="nextBtn" type="button">&rarr;</button>
+    </div>
+  </header>
+
+  <div class="lenses" id="lenses">
+    <span class="lens-lab">Show me</span>
+  </div>
+
+  <div class="board" id="board">
+    <div class="rail" id="rail"></div>
+    <div class="scroller" id="scroller">
+      <div class="canvas" id="canvas">
+        <svg class="wires" id="wires" aria-hidden="true"></svg>
+        <div class="token" id="token"></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="dock" id="dock" aria-live="polite">
+    <div id="dCol1">
+      <div class="watermark" id="dWater"></div>
+      <div class="pane-head">
+        <span class="ph-dot"></span>
+        <span class="ph-lab" id="dNum"></span>
+        <span class="ph-sep"></span>
+        <span class="ph-actor" id="dActor"></span>
+        <span class="ph-sep"></span>
+        <span class="ph-act" id="dAct"></span>
+      </div>
+      <h2 class="d-title" id="dTitle"></h2>
+      <p class="d-action" id="dAction"></p>
+      <div id="dCallout"></div>
+    </div>
+    <div id="dCol2">
+      <div class="pane-head">
+        <span class="ph-lab">Output &rarr; handoff</span>
+        <span class="ph-note">what the next step receives</span>
+      </div>
+      <p class="handoff" id="dOut"></p>
+      <div class="pane-head"><span class="ph-lab">Functionality required</span></div>
+      <ul class="chips" id="dFunc"></ul>
+      <div class="plan" id="dPlan"></div>
+    </div>
+    <div class="wfwrap" id="dWire"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var LANES = {
+  publisher:{label:"Publisher",          v:"--publisher"},
+  creator:  {label:"Creator",            v:"--creator"},
+  wpp:      {label:"WPP Media",          v:"--wpp"},
+  client:   {label:"Client / brand",     v:"--client"},
+  paid:     {label:"Paid & measurement", v:"--paid"},
+  brandA:   {label:"Brand / IP holder",  v:"--publisher"},
+  brandB:   {label:"Counterparty brand", v:"--client"}
+};
+/* every colour is read back out of the cascade, so a theme flip needs no
+   second set of values in here */
+var CS = getComputedStyle(document.documentElement);
+function cssVar(n){ return CS.getPropertyValue(n).trim(); }
+function isLight(){ return cssVar("--mode") === "light"; }
+
+/* ---- Phase 1: buy publisher content ---- */
+var BUY = [
+{n:"01",plan:["Organization / access"],act:"Set up",lane:"publisher",title:"Publisher signs in",
+ action:"Logs into the WPP-branded workspace with approved access.",
+ out:"Publisher sees the properties, offers and campaigns they are permitted to see.",
+ func:["Branded login","Organisation accounts","User permissions"],
+ wf:{kind:"auth",name:"Sign in",fields:["Work email","Organisation","Continue with SSO"]}},
+
+{n:"02",plan:["Profile / offer upload", "Audience / account data"],act:"Set up",lens:["data"],lane:"publisher",title:"Publisher creates profile",
+ action:"Adds properties, handles, content examples and permitted audience and engagement data.",
+ out:"Profile represents the publisher's creative voice and the communities it reaches.",
+ func:["Multi-property profiles","Asset & link upload","Data import with source + date","Audience & post-level data"],
+ callout:"A publisher profile that behaves exactly like a creator profile.",
+ wf:{kind:"profile",name:"Publisher profile",fields:["Properties","Handles","Audience import","Content examples"]}},
+
+{n:"03",plan:["Profile / offer upload"],act:"Set up",lens:["deal"],lane:"publisher",title:"Publisher lists offer",
+ action:"Enters custom-content formats, channels, rates, availability, lead times, rights and exclusions.",
+ out:"Offer is linked to the relevant property and queued for WPP review.",
+ func:["Configurable offer fields","Pricing","Rights","Availability","Edit & update","Scheduling & lead times","Repeat & standing offers"],
+ wf:{kind:"form",name:"Create offer",fields:["Format","Channel","Rate card","Availability","Lead time","Rights & exclusions"]}},
+
+{n:"04",act:"Set up",lens:["conn"],lane:"wpp",title:"WPP publishes listing",
+ action:"Checks the profile and agreed offer details, then approves or requests corrections.",
+ out:"Approved listing becomes discoverable to authorised users.",
+ func:["Review controls","Publication controls","Change requests","Connector: Goat / Obviously"],
+ wf:{kind:"review",name:"Listing review",fields:["Profile check","Offer terms","Rights language"],cta:"Publish listing"}},
+
+{n:"05",act:"Match",lens:["conn", "data"],lane:"wpp",title:"WPP discovers partners",
+ action:"Searches and compares publisher and creator options against the client's audience, brief and budget.",
+ out:"Relevant candidates and live offers returned — publishers and creators side by side.",
+ func:["Search & filter","Comparable audience data","Connector: Goat / Obviously discovery"],
+ callout:"Publishers and creators in one search, with comparable numbers. This is the unlock.",
+ wf:{kind:"grid",name:"Discovery",fields:["Audience","Budget","Format"],tags:["Publisher","Creator","Publisher"]}},
+
+{n:"06",act:"Match",lane:"wpp",co:"client",title:"WPP shortlists, client selects",
+ action:"The team shares indicative options and records the client's preferred partner.",
+ out:"Selected partner and offer are linked to the campaign.",
+ func:["Shortlists","Share & export","Selection and approval record"],
+ wf:{kind:"grid",name:"Shortlist",fields:["3 options shared"],tags:["Selected","Option","Option"],cta:"Record selection"}},
+
+{n:"07",plan:["Brief / quote routing"],act:"Agree",lens:["deal"],lane:"wpp",title:"WPP submits brief",
+ action:"Enters objective, audience, deliverables and post count, KPIs, budget, dates and requested rights.",
+ out:"Brief is routed to the selected publisher.",
+ func:["Brief forms","Routing","Notifications","Multi-post schedule"],
+ wf:{kind:"form",name:"Campaign brief",fields:["Objective","Audience","Deliverables & post count","KPIs","Budget & dates","Requested rights"]}},
+
+{n:"08",plan:["Brief / quote routing"],act:"Agree",lens:["deal"],lane:"publisher",title:"Publisher confirms scope",
+ action:"Confirms availability and quotes scope, timing, price and rights; resolves exceptions with WPP.",
+ out:"Agreed proposal is ready for client approval.",
+ func:["Messaging","Quote versions","Availability","Acceptance record"],
+ wf:{kind:"thread",name:"Quote & scope",fields:["Availability confirmed","Price v2","Rights window","Exception raised"]}},
+
+{n:"09",act:"Agree",lens:["deal"],lane:"client",title:"Client approves, parties contract",
+ action:"Client approves spend and scope; the parties execute the required paperwork.",
+ out:"Contracted scope, rights, dates and payment terms retained against the campaign.",
+ func:["Approval status","Documents / e-sign or upload","Rights tracking"],
+ wf:{kind:"doc",name:"Approval & contract",fields:["Spend approved","Scope & rights","Dates","Payment terms"]}},
+
+{n:"10",plan:["Production / approvals"],act:"Make",lens:["deal"],lane:"publisher",title:"Publisher produces, uploads",
+ action:"The publisher's social team creates the custom content and submits drafts.",
+ out:"Draft assets routed to Goat and the required brand reviewers.",
+ func:["Asset uploads","Versions","Production status","Notifications"],
+ wf:{kind:"assets",name:"Production",fields:["Draft v1","Draft v2","Routed to reviewers"]}},
+
+{n:"11",plan:["Production / approvals"],act:"Make",lens:["deal"],lane:"client",title:"Goat / brand approves",
+ action:"Reviews drafts, requests revisions and signs off the final assets.",
+ out:"Approved version and the full review trail are retained.",
+ func:["Comments","Review routing","Version control","Final approval"],
+ wf:{kind:"review",name:"Content review",fields:["Comment thread","Revision requested","Version 3"],cta:"Approve final"}},
+
+{n:"12",plan:["Posting / paid access"],act:"Make",lens:["data"],lane:"publisher",title:"Publisher posts, grants access",
+ action:"Publishes on the agreed handles and dates; supplies live links and paid amplification permissions.",
+ out:"Published assets ready for the paid team to activate.",
+ func:["Live links","Posting status","Asset IDs","Authorisation & expiry","Post-level asset IDs"],
+ callout:"Paid rights travel with the asset — no separate chase for permissions.",
+ wf:{kind:"links",name:"Live links & rights",fields:["Post URL","Asset ID","Paid authorisation","Expiry"]}},
+
+{n:"13",plan:["Posting / paid access"],act:"Measure",lens:["conn", "data"],lane:"paid",title:"Paid team amplifies",
+ action:"Runs the approved content on the agreed social platforms, inside the usage rights.",
+ out:"Paid activity is associated with the content and the campaign.",
+ func:["Media-platform handoff","Usage tracking","Paid data returned to the record"],
+ wf:{kind:"links",name:"Media handoff",fields:["Platform","Usage window","Spend","Rights check"]}},
+
+{n:"14",plan:["Performance / delivery"],act:"Measure",lens:["conn", "data"],lane:"paid",title:"Team measures performance",
+ action:"Collects organic and paid results and reports against the campaign KPIs.",
+ out:"Comparable publisher and creator results retained.",
+ func:["Data / API ingestion","Common metrics","Reporting & export","Insights & reporting connector"],
+ callout:"Publisher and creator results, finally on the same metrics.",
+ wf:{kind:"chart",name:"Performance",fields:["Organic","Paid","vs KPI"]}},
+
+{n:"15",plan:["Performance / delivery"],act:"Measure",lens:["deal"],lane:"paid",title:"Team reconciles, closes",
+ action:"Verifies contracted delivery and reconciles invoices and payment.",
+ out:"Delivery and financial status recorded; campaign closed.",
+ func:["Delivery tracking","Invoice & payment status","Finance handoff","Repeat bookings"],
+ wf:{kind:"chart",name:"Reconciliation",rows:["Delivered","Invoiced","Paid","Closed"]}}
+];
+
+/* ---- Phase 1b: the optional creator branch ---- */
+var BRANCH = [
+{n:"C1",act:"Collaborate",lens:["conn"],lane:"publisher",branch:true,title:"Publisher selects a creator",
+ action:"The publisher searches the same creator pool WPP uses and picks a collaborator for the campaign.",
+ out:"Chosen creator attached to the contracted campaign.",
+ func:["Creator discovery","Role access","Selection record"],
+ callout:"The publisher reaches into the same creator pool WPP buys from.",
+ wf:{kind:"grid",name:"Creator search",fields:["Audience fit","Rate"],tags:["Creator","Creator","Creator"]}},
+
+{n:"C2",act:"Collaborate",lens:["deal"],lane:"wpp",branch:true,title:"Goat approves the collaboration",
+ action:"The collaboration brief is routed to Goat for approval before any creator work begins.",
+ out:"Approved collaboration, logged against the campaign.",
+ func:["Approval routing","Briefing","Collaboration record"],
+ wf:{kind:"review",name:"Collaboration approval",fields:["Creator","Brief","Fee split"],cta:"Approve collaboration"}},
+
+{n:"C3",act:"Collaborate",lane:"creator",branch:true,title:"Creator accepts brief",
+ action:"The creator receives the collaboration brief, accepts the terms and joins the production.",
+ out:"Approved collaboration feeds straight into production at step 10.",
+ func:["Creator accounts","Brief acceptance","Deliverable assignment"],
+ wf:{kind:"thread",name:"Creator brief",fields:["Brief received","Terms accepted","Deliverables x3"]}}
+];
+
+/* ---- Phase 2: brand-to-brand exchange ---- */
+var EXCHANGE = [
+{n:"E1",act:"Join",lane:"brandA",title:"Property opts in",
+ action:"Non-advertising-supported properties, IP holders and brands opt in to participate in the exchange.",
+ out:"Entity is live on the platform and discoverable by every other opted-in entity.",
+ func:["Self-serve onboarding","Eligibility check","Organisation accounts"],
+ wf:{kind:"auth",name:"Opt in",fields:["Entity type","Properties & handles","Accept exchange terms"]}},
+
+{n:"E2",act:"Join",lens:["data"],lane:"brandA",title:"Profile behaves like a creator profile",
+ action:"The profile carries followers, engagement and content examples — the same fields as any creator or publisher.",
+ out:"An owned audience becomes directly comparable to every other partner on the platform.",
+ func:["Shared profile schema","Audience & engagement import","Content examples","Comparable creator / publisher metrics"],
+ callout:"An owned audience, valued like a creator audience.",
+ wf:{kind:"profile",name:"Entity profile",fields:["Followers","Engagement","Content","Categories"]}},
+
+{n:"E3",act:"Offer",lens:["deal"],lane:"brandA",title:"Entity offers a partnership",
+ action:"Any opted-in entity can offer a partnership to any other — exchanging or co-creating owned assets.",
+ out:"Offer sent with the assets proposed, the assets requested, dates and rights.",
+ func:["Two-sided offer builder","Discovery across opted-in entities","Messaging"],
+ callout:"Any opted-in entity can offer any other. No media buy in between.",
+ wf:{kind:"thread",name:"Partnership offer",fields:["Assets offered","Assets requested","Dates","Rights"]}},
+
+{n:"E4",act:"Offer",lens:["deal"],lane:"brandB",title:"Counterparty accepts",
+ action:"The receiving brand accepts, counters or declines the proposed partnership.",
+ out:"An agreed two-party scope.",
+ func:["Acceptance record","Counter-offer versions","Role permissions"],
+ wf:{kind:"thread",name:"Counter & accept",fields:["Counter v2","Terms agreed","Accepted"]}},
+
+{n:"E5",act:"Record",lens:["deal"],lane:"wpp",title:"Scope, rights and value recorded",
+ action:"Two-party scope, rights and the value exchanged are recorded against the partnership.",
+ out:"Contracted exchange retained for both sides — and indemnified.",
+ func:["Rights tracking","Exchange valuation","Documents / e-sign","Legal structure"],
+ wf:{kind:"doc",name:"Exchange record",fields:["Two-party scope","Rights","Exchange value","Indemnity"]}},
+
+{n:"E6",act:"Make & measure",lens:["deal"],lane:"brandA",co:"brandB",title:"Assets co-created or exchanged",
+ action:"Both parties hand over or co-create the agreed assets. WPP Media Sports & Entertainment can produce the content for a fee.",
+ out:"Finished assets, approved by both sides.",
+ func:["Asset uploads & versions","Production request to WPP S&E","Two-party approval routing"],
+ wf:{kind:"assets",name:"Co-creation",fields:["Brand A assets","Brand B assets","WPP S&E production"]}},
+
+{n:"E7",act:"Make & measure",lens:["data"],lane:"brandB",co:"brandA",title:"Both parties publish and measure",
+ action:"Each side publishes on the agreed handles; results are collected against the partnership for both parties.",
+ out:"Comparable results held for both sides of the exchange.",
+ func:["Live links & posting status","Shared reporting","Common metrics"],
+ wf:{kind:"chart",name:"Shared performance",fields:["Brand A","Brand B","Combined"]}},
+
+{n:"E8",act:"Settle",lane:"wpp",title:"WPP charges the transaction fee",
+ action:"WPP Media charges a transaction fee on the partnership, plus any production fee owed.",
+ out:"Partnership closed; fees invoiced.",
+ func:["Fee calculation","Invoicing / finance handoff","Delivery tracking"],
+ callout:"WPP earns on the transaction, not on the media.",
+ wf:{kind:"chart",name:"Fees & close",rows:["Transaction fee","Production fee","Invoiced","Closed"]}}
+];
+
+var LENSES = [
+  {k:"all",  label:"Everything", note:""},
+  {k:"deal", label:"Deal mechanics",
+   note:"Brief-led custom content, quotes, approvals, multiple posts, scheduling and repeat bookings."},
+  {k:"conn", label:"Connectors",
+   note:"APIs and connectors that let Goat / Obviously add discovery, insights and reporting."},
+  {k:"data", label:"Comparable data",
+   note:"Audience and post-level organic and paid data; comparable creator and publisher metrics."}
+];
+
+var PHASES = [
+  {id:"buy", num:"Phase 1", tab:"Buy publisher content", status:"Core MVP", tc:"--publisher",
+   title:"A new way to transact with publishers by buying content",
+   flag:"Assumes WPP-managed buying — buyer access and independence to be confirmed",
+   lanes:["publisher","wpp","client","paid"], steps:BUY},
+
+  {id:"creator", num:"Phase 1b", tab:"Add the creator branch", status:"Optional — confirm MVP need", tc:"--creator",
+   title:"The same deal, with a creator pulled in before production",
+   flag:"Optional branch — confirm whether it is needed for MVP",
+   lanes:["publisher","creator","wpp","client","paid"],
+   steps:BUY.slice(0,9).concat(BRANCH, BUY.slice(9))},
+
+  {id:"exchange", num:"Phase 2", tab:"Brand ↔ brand exchange", status:"Later phase", tc:"--wpp",
+   title:"A marketplace for brands to exchange owned assets with each other",
+   flag:"Later phase — not a core MVP requirement",
+   lanes:["brandA","wpp","brandB"], steps:EXCHANGE}
+];
+
+function defs(){
+  return '<defs>'+
+    '<marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto">'+
+      '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--wire")+'"></polygon></marker>'+
+    '<marker id="ahb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto">'+
+      '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--creator")+'"></polygon></marker>'+
+    '<marker id="ahl" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.4" markerHeight="5.4" orient="auto">'+
+      '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--wire-live")+'"></polygon></marker>'+
+    '<filter id="glow" x="-70%" y="-70%" width="240%" height="240%">'+
+      '<feGaussianBlur stdDeviation="3.2" result="b"></feGaussianBlur>'+
+      '<feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>'+
+    '</filter>'+
+  '</defs>';
+}
+
+/* ---------------- geometry ---------------- */
+var COL = 178, NW = 156, PADX = 26, PADY = 16;
+var LANE_H = 92, NH = 60, OFFY = 0, ACT_H = 26;
+
+function laneTop(i){ return OFFY + PADY + ACT_H + i*LANE_H; }
+function nodeX(i){ return PADX + i*COL; }
+function nodeY(li){ return laneTop(li) + (LANE_H - NH)/2; }
+
+var phase = PHASES[0], cur = 0, lens = "all", playing = false, rafId = null, timerId = null;
+var lastAvail = -1, settling = false;
+var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+var el = {};
+["board","dock","tabs","themeBtn","guideBtn","lenses","cover","coverRoles","coverGo","rail","canvas","scroller","wires","token",
+ "playBtn","prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
+ "dFunc","dWire","dCallout","dWater","dAct","dPlan"].forEach(function(k){ el[k] = document.getElementById(k); });
+
+/* ---------------- capability lenses ---------------- */
+LENSES.forEach(function(L){
+  var b = document.createElement("button");
+  b.className = "lens"; b.type = "button";
+  b.setAttribute("aria-pressed", L.k === "all" ? "true" : "false");
+  b.textContent = L.label;
+  b.addEventListener("click", function(){ setLens(L.k); });
+  el.lenses.appendChild(b);
+});
+var lensNote = document.createElement("span");
+lensNote.className = "lens-note";
+el.lenses.appendChild(lensNote);
+
+function inLens(st){ return lens === "all" || !!(st.lens && st.lens.indexOf(lens) > -1); }
+
+function setLens(k){
+  lens = k;
+  Array.prototype.forEach.call(el.lenses.querySelectorAll(".lens"), function(b,i){
+    b.setAttribute("aria-pressed", LENSES[i].k === k ? "true" : "false");
+  });
+  var L = LENSES.filter(function(x){ return x.k === k; })[0];
+  if (k === "all"){ lensNote.innerHTML = ""; }
+  else {
+    var hits = phase.steps.filter(inLens).length;
+    lensNote.innerHTML = "<b>" + hits + " of " + phase.steps.length + " steps</b>" + L.note;
+  }
+  paintLens();
+  /* land on the first step the lens touches, so the dock agrees with the board */
+  if (k !== "all"){
+    for (var i=0;i<phase.steps.length;i++){
+      if (inLens(phase.steps[i])){ select(i, true); break; }
+    }
+  }
+}
+function paintLens(){
+  Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
+    var st = phase.steps[+n.getAttribute("data-i")];
+    var on = !!inLens(st);
+    n.classList.toggle("off", !on);
+    n.classList.toggle("lit", on && lens !== "all");
+  });
+}
+
+/* ---------------- tabs ---------------- */
+PHASES.forEach(function(p,i){
+  var b = document.createElement("button");
+  b.className = "tab"; b.type = "button";
+  b.setAttribute("role","tab");
+  b.setAttribute("aria-selected", i===0 ? "true" : "false");
+  b.style.setProperty("--tc","var("+p.tc+")");
+  b.innerHTML = '<em>'+p.num+' &middot; '+p.status+'</em>'+p.tab;
+  b.addEventListener("click", function(){ setPhase(i); });
+  el.tabs.appendChild(b);
+});
+function setPhase(i){
+  stopPlay();
+  phase = PHASES[i]; cur = 0;
+  Array.prototype.forEach.call(el.tabs.children, function(t,j){
+    t.setAttribute("aria-selected", j===i ? "true" : "false");
+  });
+  el.scroller.scrollLeft = 0;
+  render();
+  setLens(lens);
+}
+
+/* ---------------- render ---------------- */
+function elbow(x1,y1,x2,y2){
+  if (Math.abs(y1-y2) < 1) return "M"+x1+" "+y1+" H"+x2;
+  var mx = (x1+x2)/2, r = 10, dy = y2>y1 ? 1 : -1;
+  return "M"+x1+" "+y1+" H"+(mx-r)+
+         " Q"+mx+" "+y1+" "+mx+" "+(y1+r*dy)+
+         " V"+(y2-r*dy)+
+         " Q"+mx+" "+y2+" "+(mx+r)+" "+y2+" H"+x2;
+}
+
+function render(){
+  var lanes = phase.lanes, steps = phase.steps;
+
+  el.canvas.style.minHeight = "0px";
+  el.rail.style.minHeight = "0px";
+  var avail = el.board.clientHeight;
+  lastAvail = avail;
+  LANE_H = Math.max(66, Math.min(132, Math.floor((avail - PADY*2 - ACT_H) / lanes.length)));
+  NH = Math.max(48, Math.min(64, LANE_H - 28));
+
+  var H = PADY*2 + ACT_H + lanes.length*LANE_H;
+  var W = PADX*2 + (steps.length-1)*COL + NW;
+  OFFY = Math.max(0, Math.round((avail - H)/2));
+  var FULL = OFFY + H;
+
+  el.rail.innerHTML = "";
+  lanes.forEach(function(k,i){
+    var d = document.createElement("div");
+    d.className = "rail-lane";
+    d.setAttribute("data-lane", k);
+    d.style.top = laneTop(i)+"px";
+    d.style.height = LANE_H+"px";
+    d.style.setProperty("--lc","var("+LANES[k].v+")");
+    d.innerHTML = '<div class="rail-bar"></div><span>'+LANES[k].label+'</span>';
+    el.rail.appendChild(d);
+  });
+  el.rail.style.minHeight = FULL+"px";
+
+  el.canvas.style.width = W+"px";
+  el.canvas.style.minHeight = FULL+"px";
+  Array.prototype.slice.call(el.canvas.querySelectorAll(".node,.ghost,.lane-band,.branch-tag"))
+    .forEach(function(n){ n.remove(); });
+  Array.prototype.slice.call(el.canvas.querySelectorAll(".act")).forEach(function(n){ n.remove(); });
+
+  lanes.forEach(function(k,i){
+    var b = document.createElement("div");
+    b.className = "lane-band";
+    b.setAttribute("data-lane", k);
+    b.style.top = laneTop(i)+"px";
+    b.style.height = LANE_H+"px";
+    b.style.setProperty("--lc","var("+LANES[k].v+")");
+    b.style.setProperty("--lc-rgb", cssVar(LANES[k].v+"-rgb") || "140 150 170");
+    el.canvas.insertBefore(b, el.wires);
+  });
+
+  var WIRE = cssVar("--wire"), BRANCH_C = cssVar("--creator");
+  var paths = "";
+  for (var i=0;i<steps.length-1;i++){
+    var a = steps[i], z = steps[i+1];
+    var la = lanes.indexOf(a.lane), lz = lanes.indexOf(z.lane);
+    var x1 = nodeX(i)+NW, y1 = nodeY(la)+NH/2;
+    var x2 = nodeX(i+1)-9, y2 = nodeY(lz)+NH/2;
+    var isB = (a.branch || z.branch);
+    paths += '<path class="flow" d="'+elbow(x1,y1,x2,y2)+'" fill="none"'+
+             ' stroke="'+(isB?BRANCH_C:WIRE)+'" stroke-width="1.6"'+
+             (isB?' stroke-dasharray="5 4"':'')+
+             ' marker-end="url(#'+(isB?'ahb':'ah')+')"'+
+             ' data-i="'+i+'" data-branch="'+(isB?1:0)+'"></path>';
+  }
+  steps.forEach(function(s,i){
+    if (!s.co) return;
+    var li = lanes.indexOf(s.lane), ci = lanes.indexOf(s.co);
+    if (ci < 0) return;
+    var cx = nodeX(i)+NW/2;
+    var ya = ci > li ? nodeY(li)+NH : nodeY(li);
+    var yb = ci > li ? nodeY(ci)+(NH-22)/2 : nodeY(ci)+(NH+22)/2;
+    paths += '<line x1="'+cx+'" y1="'+ya+'" x2="'+cx+'" y2="'+yb+'" stroke="'+
+             (cssVar(LANES[s.co].v)||WIRE)+'" stroke-width="1.5" stroke-dasharray="3 3" opacity=".6"></line>';
+  });
+
+  el.wires.setAttribute("viewBox","0 0 "+W+" "+FULL);
+  el.wires.setAttribute("width",W);
+  el.wires.setAttribute("height",FULL);
+  el.wires.style.width = W+"px";
+  el.wires.style.height = FULL+"px";
+  el.wires.innerHTML = defs() + paths;
+
+  steps.forEach(function(s,i){
+    var li = lanes.indexOf(s.lane);
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "node" + (s.branch ? " branch" : "");
+    b.style.left = nodeX(i)+"px";
+    b.style.top = nodeY(li)+"px";
+    b.style.minHeight = NH+"px";
+    b.style.setProperty("--nc","var("+LANES[s.lane].v+")");
+    b.setAttribute("data-i", i);
+    b.innerHTML = '<span class="n">'+s.n+'</span><span class="t">'+s.title+'</span>'+
+                  (s.callout ? '<span class="star"></span>' : '')+
+                  '<span class="peek"><b>Hands over</b><span>'+s.out+'</span>'+
+                  (s.callout ? '<u>&#9733; '+s.callout+'</u>' : '')+'</span>';
+    b.addEventListener("click", function(){ stopPlay(); select(i, true); });
+    el.canvas.appendChild(b);
+
+    if (s.co){
+      var ci = lanes.indexOf(s.co);
+      if (ci > -1){
+        var g = document.createElement("div");
+        g.className = "ghost";
+        g.style.left = nodeX(i)+"px";
+        g.style.top = (nodeY(ci)+(NH-22)/2)+"px";
+        g.style.setProperty("--nc","var("+LANES[s.co].v+")");
+        g.innerHTML = '<i>with '+LANES[s.co].label+'</i>';
+        el.canvas.appendChild(g);
+      }
+    }
+  });
+
+  /* act bands — contiguous runs of steps that share an act */
+  var runStart = 0;
+  for (var a=0; a<=steps.length; a++){
+    var here = a < steps.length ? steps[a].act : null;
+    if (a === steps.length || here !== steps[runStart].act){
+      var lab = steps[runStart].act;
+      if (lab){
+        var band = document.createElement("div");
+        band.className = "act";
+        band.setAttribute("data-act", lab);
+        band.style.left = (nodeX(runStart) - 10) + "px";
+        band.style.width = (nodeX(a-1) + NW + 10 - (nodeX(runStart) - 10)) + "px";
+        band.style.top = (OFFY + PADY + 4) + "px";
+        band.innerHTML = '<i>' + lab + '</i>';
+        el.canvas.appendChild(band);
+      }
+      runStart = a;
+    }
+  }
+
+  var fb = -1;
+  steps.forEach(function(s,i){ if (s.branch && fb<0) fb = i; });
+  if (fb > -1){
+    var tag = document.createElement("div");
+    tag.className = "branch-tag";
+    tag.textContent = "Optional creator branch";
+    tag.style.left = (nodeX(fb)-4)+"px";
+    tag.style.top = (OFFY+PADY+ACT_H-7)+"px";
+    el.canvas.appendChild(tag);
+  }
+
+  select(cur < steps.length ? cur : 0, false);
+  paintLens();
+
+}
+
+/* ---------------- selection ---------------- */
+function select(i, scroll){
+  cur = i;
+  var steps = phase.steps, s = steps[i];
+
+  Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
+    var ni = +n.getAttribute("data-i");
+    n.setAttribute("aria-current", ni===i ? "true" : "false");
+    n.classList.toggle("done", ni < i);
+  });
+  Array.prototype.forEach.call(el.wires.querySelectorAll("path.flow"), function(p){
+    var pi = +p.getAttribute("data-i");
+    var isB = p.getAttribute("data-branch") === "1";
+    var live = (pi === i-1);
+    p.setAttribute("opacity", pi < i ? "1" : ".3");
+    p.classList.toggle("live", live && !reduce);
+    if (live){
+      p.setAttribute("stroke", cssVar("--wire-live"));
+      p.setAttribute("stroke-width","2.3");
+      p.setAttribute("stroke-dasharray","7 6");
+      p.setAttribute("marker-end","url(#ahl)");
+      /* a blur under a dark line reads as a smudge on paper — glow is dark-only */
+      if (cssVar("--glow") === "1") p.setAttribute("filter","url(#glow)");
+      else p.removeAttribute("filter");
+    } else {
+      p.setAttribute("stroke", isB ? cssVar("--creator") : cssVar("--wire"));
+      p.setAttribute("stroke-width","1.6");
+      if (isB) p.setAttribute("stroke-dasharray","5 4"); else p.removeAttribute("stroke-dasharray");
+      p.setAttribute("marker-end", isB ? "url(#ahb)" : "url(#ah)");
+      p.removeAttribute("filter");
+    }
+  });
+  Array.prototype.forEach.call(el.canvas.querySelectorAll(".act"), function(a){
+    a.classList.toggle("hot", a.getAttribute("data-act") === s.act);
+  });
+  Array.prototype.forEach.call(el.rail.querySelectorAll(".rail-lane"), function(r){
+    r.classList.toggle("hot", r.getAttribute("data-lane") === s.lane);
+  });
+  Array.prototype.forEach.call(el.canvas.querySelectorAll(".lane-band"), function(r){
+    r.classList.toggle("hot", r.getAttribute("data-lane") === s.lane);
+  });
+
+  var c = "var("+LANES[s.lane].v+")";
+  el.canvas.style.setProperty("--nc", c);
+  el.dock.style.setProperty("--nc", c);
+  el.dock.style.setProperty("--nc-rgb", cssVar(LANES[s.lane].v+"-rgb") || "140 150 170");
+  el.dWater.textContent = s.n;
+  el.dNum.textContent = "Step "+s.n;
+  el.dActor.textContent = LANES[s.lane].label + (s.co ? " + "+LANES[s.co].label : "");
+  el.dTitle.textContent = s.title;
+  el.dAction.textContent = s.action;
+  el.dOut.textContent = s.out;
+  el.dFunc.innerHTML = s.func.map(function(f){ return "<li>"+f+"</li>"; }).join("");
+  el.dAct.textContent = s.act || "";
+  el.dPlan.innerHTML = s.plan
+    ? '<b>Partner input</b>' + s.plan.map(function(x){ return "<span>"+x+"</span>"; }).join("")
+    : '';
+  el.dCallout.innerHTML = s.callout
+    ? '<div class="callout"><span class="cmark">&#9733; Why it matters</span><p>'+s.callout+'</p></div>'
+    : '';
+  el.dWire.innerHTML =
+    '<div class="pane-head"><span class="ph-lab">The screen</span>'+
+    '<span class="ph-note">indicative, not a design</span></div>'+ wire(s.wf);
+  el.token.style.setProperty("--tc", c);
+
+  el.prevBtn.disabled = i===0;
+  el.nextBtn.disabled = i===steps.length-1;
+  if (scroll !== false) ensureVisible(i);
+}
+
+function ensureVisible(i){
+  var x = nodeX(i), sc = el.scroller;
+  if (x < sc.scrollLeft + 40 || x + NW > sc.scrollLeft + sc.clientWidth - 40){
+    var target = Math.max(0, x - sc.clientWidth/2 + NW/2);
+    if (reduce) sc.scrollLeft = target; else sc.scrollTo({left:target, behavior:"smooth"});
+  }
+}
+
+/* ---------------- playback ---------------- */
+function stopPlay(){
+  playing = false;
+  el.playBtn.innerHTML = "&#9654;&nbsp; Play flow";
+  if (rafId){ cancelAnimationFrame(rafId); rafId = null; }
+  if (timerId){ clearTimeout(timerId); timerId = null; }
+  el.token.style.opacity = 0;
+}
+function startPlay(){
+  playing = true;
+  el.playBtn.innerHTML = "&#10073;&#10073;&nbsp; Pause";
+  if (cur >= phase.steps.length-1) select(0, true);
+  timerId = setTimeout(advance, 700);
+}
+function advance(){
+  if (!playing) return;
+  if (cur >= phase.steps.length-1){ stopPlay(); return; }
+  var from = cur, to = cur+1;
+  var path = el.wires.querySelector('path[data-i="'+from+'"]');
+  if (!path || reduce){
+    select(to, true);
+    timerId = setTimeout(advance, 2200);
+    return;
+  }
+  ensureVisible(to);
+  var len = path.getTotalLength(), t0 = null, dur = 660;
+  el.token.style.opacity = 1;
+  function frame(ts){
+    if (!playing) return;
+    if (t0 === null) t0 = ts;
+    var p = Math.min(1, (ts-t0)/dur);
+    var e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+    var pt = path.getPointAtLength(e*len);
+    el.token.style.left = pt.x+"px";
+    el.token.style.top = pt.y+"px";
+    if (p < 1) rafId = requestAnimationFrame(frame);
+    else {
+      el.token.style.opacity = 0;
+      select(to, true);
+      timerId = setTimeout(advance, 2000);
+    }
+  }
+  rafId = requestAnimationFrame(frame);
+}
+
+el.playBtn.addEventListener("click", function(){ playing ? stopPlay() : startPlay(); });
+el.prevBtn.addEventListener("click", function(){ stopPlay(); if (cur>0) select(cur-1,true); });
+el.nextBtn.addEventListener("click", function(){ stopPlay(); if (cur<phase.steps.length-1) select(cur+1,true); });
+document.addEventListener("keydown", function(e){
+  if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if (!el.cover.hidden){ el.cover.hidden = true; return; }
+  if (e.key === "ArrowRight"){ stopPlay(); if (cur<phase.steps.length-1) select(cur+1,true); }
+  else if (e.key === "ArrowLeft"){ stopPlay(); if (cur>0) select(cur-1,true); }
+  else if (e.key === " "){ e.preventDefault(); playing ? stopPlay() : startPlay(); }
+});
+
+/* ---------------- wireframes ---------------- */
+function chrome(name, body){
+  return '<div class="wf"><div class="wf-bar"><i class="wf-dot"></i><i class="wf-dot"></i><i class="wf-dot"></i>'+
+         '<span class="wf-name">'+name+'</span></div><div class="wf-body">'+body+'</div></div>';
+}
+function flds(list, cls){
+  return (list||[]).map(function(f){ return '<div class="wf-fld '+(cls||'')+'">'+f+'</div>'; }).join("");
+}
+function wire(w){
+  var f = w.fields || [], b = "";
+  switch(w.kind){
+    case "auth":
+      b = '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:7px;padding:2px 12px">'+
+          '<div style="height:12px;width:30px;border-radius:2px;background:var(--nc)"></div>'+flds(f.slice(0,2))+
+          '<div class="wf-btn">'+(f[2]||"Continue")+'</div></div>';
+      break;
+    case "profile":
+      b = '<div class="wf-row"><div class="wf-av" style="width:30px;flex:0 0 30px;height:30px"></div>'+
+          '<div class="wf-col"><div class="wf-ln"></div><div class="wf-ln s"></div>'+
+          '<div class="wf-tag">Verified property</div></div></div>'+
+          '<div class="wf-kpis">'+
+            '<div class="wf-kpi"><b>2.4M</b><span>Followers</span></div>'+
+            '<div class="wf-kpi"><b>4.8%</b><span>Engage</span></div>'+
+            '<div class="wf-kpi"><b>12</b><span>Properties</span></div></div>'+flds(f,"k");
+      break;
+    case "form":
+      b = '<div class="wf-row" style="flex:1;min-height:0">'+
+          '<div class="wf-nav">'+f.map(function(_,i){ return '<div class="wf-navi'+(i===1?" on":"")+'"></div>'; }).join("")+'</div>'+
+          '<div class="wf-col">'+flds(f)+'<div class="wf-btn">Submit</div></div></div>';
+      break;
+    case "grid":
+      b = flds(f.slice(0,3))+
+          '<div class="wf-cards">'+(w.tags||["Card","Card","Card"]).map(function(t,i){
+            return '<div class="wf-card'+(i===0&&w.cta?" sel":"")+'"><div class="wf-av"></div>'+
+                   '<div class="wf-ln"></div><div class="wf-ln s"></div><div class="wf-tag">'+t+'</div></div>';
+          }).join("")+'</div>'+(w.cta ? '<div class="wf-btn">'+w.cta+'</div>' : '');
+      break;
+    case "review":
+      b = '<div class="wf-row" style="flex:1;min-height:0">'+
+          '<div class="wf-col" style="flex:0 0 40px"><div class="wf-av" style="height:24px"></div>'+
+          '<div class="wf-av" style="height:24px;opacity:.5"></div></div>'+
+          '<div class="wf-col">'+flds(f,"k")+'</div></div>'+
+          '<div class="wf-row"><div class="wf-btn">'+(w.cta||"Approve")+'</div>'+
+          '<div class="wf-btn ghostbtn">Request change</div></div>';
+      break;
+    case "thread":
+      b = '<div class="wf-col" style="flex:1;min-height:0;justify-content:flex-end">'+
+          f.map(function(t,i){ return '<div class="wf-bubble'+(i%2?" me":"")+'">'+t+'</div>'; }).join("")+
+          '</div><div class="wf-row"><div class="wf-fld">Reply&hellip;</div><div class="wf-btn">Send</div></div>';
+      break;
+    case "doc":
+      b = '<div class="wf-doc"><div class="wf-ln q"></div>'+
+          f.map(function(t){ return '<div class="wf-li"><div class="wf-tag">&check;</div>'+
+                 '<div class="wf-fld" style="border:0;padding:0;background:transparent">'+t+'</div></div>'; }).join("")+
+          '<div class="wf-sig"><div class="wf-ln s" style="width:44%"></div><div class="wf-tag">E-signed</div></div></div>';
+      break;
+    case "assets":
+      b = '<div class="wf-cards">'+f.map(function(t,i){
+            return '<div class="wf-card"><div class="wf-av" style="height:26px;opacity:'+(i===2?".45":"1")+'"></div>'+
+                   '<div class="wf-tag">'+t+'</div></div>'; }).join("")+'</div>'+
+          '<div class="wf-list"><div class="wf-li"><div class="wf-ln"></div><div class="wf-tag">In review</div></div>'+
+          '<div class="wf-li"><div class="wf-ln s"></div><div class="wf-tag">Uploading</div></div></div>'+
+          '<div class="wf-btn">Submit drafts</div>';
+      break;
+    case "links":
+      b = '<div class="wf-list" style="flex:1">'+f.map(function(t,i){
+            return '<div class="wf-li"><div class="wf-fld" style="border:0;padding:0;background:transparent">'+t+'</div>'+
+                   '<div class="wf-tag">'+(i%2?"Set":"Live")+'</div></div>'; }).join("")+
+          '</div><div class="wf-btn">Grant access</div>';
+      break;
+    case "chart":
+      if (w.rows){
+        b = '<div class="wf-list" style="flex:1">'+w.rows.map(function(t,i){
+              return '<div class="wf-li"><div class="wf-fld" style="border:0;padding:0;background:transparent">'+t+'</div>'+
+                     '<div class="wf-tag">'+(i<2?"Matched":"Pending")+'</div></div>'; }).join("")+
+            '</div><div class="wf-btn">Close campaign</div>';
+      } else {
+        b = '<div class="wf-kpis">'+f.map(function(t,i){
+              return '<div class="wf-kpi"><b>'+["1.8M","640K","112%"][i%3]+'</b><span>'+t+'</span></div>'; }).join("")+
+            '</div><div class="wf-chart">'+[34,52,41,68,57,78,62].map(function(h,i){
+              return '<div class="wf-bar-v'+(i>4?" on":"")+'" style="height:'+h+'%"></div>'; }).join("")+
+            '</div><div class="wf-row"><div class="wf-tag">Organic</div><div class="wf-tag">Paid</div>'+
+            '<div class="wf-tag">vs KPI</div></div>';
+      }
+      break;
+    default:
+      b = flds(f);
+  }
+  return chrome(w.name, b);
+}
+
+/* ---------------- cover ---------------- */
+["publisher","wpp","client","paid"].forEach(function(k){
+  var d = document.createElement("div");
+  d.className = "cover-role";
+  d.style.setProperty("--rc","var("+LANES[k].v+")");
+  d.style.setProperty("--rc-rgb", cssVar(LANES[k].v+"-rgb"));
+  var says = {publisher:"lists what it can make",wpp:"finds it and briefs it",
+              client:"approves and pays",paid:"amplifies and reports"};
+  d.innerHTML = "<i></i>" + LANES[k].label + "<u>" + says[k] + "</u>";
+  el.coverRoles.appendChild(d);
+});
+function hideCover(){ el.cover.hidden = true; }
+el.cover.addEventListener("click", hideCover);
+el.coverGo.addEventListener("click", hideCover);
+el.guideBtn.addEventListener("click", function(){ stopPlay(); el.cover.hidden = false; });
+
+/* ---------------- theme ---------------- */
+var root = document.documentElement;
+function syncThemeBtn(){
+  var light = isLight();
+  el.themeBtn.innerHTML = light ? "\u263E&nbsp; Dark" : "\u2600&nbsp; Light";
+  el.themeBtn.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+}
+function setTheme(mode){
+  root.setAttribute("data-ui", mode);
+  try{ localStorage.setItem("ie-theme", mode); }catch(e){}
+  syncThemeBtn();
+  render();
+}
+try{
+  var saved = localStorage.getItem("ie-theme");
+  if (saved === "light" || saved === "dark") root.setAttribute("data-ui", saved);
+}catch(e){}
+el.themeBtn.addEventListener("click", function(){ setTheme(isLight() ? "dark" : "light"); });
+/* with no explicit choice stored, follow the host and the OS */
+var mqLight = window.matchMedia("(prefers-color-scheme: light)");
+(mqLight.addEventListener ? mqLight.addEventListener.bind(mqLight,"change") : mqLight.addListener.bind(mqLight))(function(){
+  if (!root.hasAttribute("data-ui")){ syncThemeBtn(); render(); }
+});
+
+var rsz = null;
+window.addEventListener("resize", function(){
+  clearTimeout(rsz);
+  rsz = setTimeout(render, 160);
+});
+if (window.ResizeObserver){
+  new ResizeObserver(function(){
+    if (Math.abs(el.board.clientHeight - lastAvail) > 4) render();
+  }).observe(el.board);
+}
+
+syncThemeBtn();
+render();
+setLens("all");
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
