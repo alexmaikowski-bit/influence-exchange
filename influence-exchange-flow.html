@@ -421,7 +421,7 @@ path.flow.live{animation:march 1s linear infinite}
 /* ---------- dock ---------- */
 .dock[hidden]{display:none}
 .dock{
-  flex:0 0 auto;height:304px;display:grid;
+  flex:0 0 auto;height:318px;display:grid;
   grid-template-columns:minmax(0,1fr) 352px;
   background:var(--dock-bg);
   border-top:1px solid var(--rule-hi);
@@ -634,7 +634,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* ---------- narrow / short ---------- */
 @media (max-width:1180px){
-  .dock{grid-template-columns:minmax(0,1fr) 300px;height:336px}
+  .dock{grid-template-columns:minmax(0,1fr) 300px;height:352px}
   .d-body{grid-template-columns:minmax(0,1fr);gap:12px}
 }
 @media (max-width:860px){
@@ -941,10 +941,11 @@ var BUY = [
  wf:{kind:"profile",name:"Publisher profile",fields:["Properties","Handles","Audience import","Content examples"]}},
 
 {n:"03",plan:["Profile / offer upload"],act:"Set up",lens:["deal"],lane:"publisher",title:"Publisher lists offer",
- action:"Enters custom-content formats, channels, rates, availability, lead times, rights and exclusions.",
+ action:"Lists custom-content formats, channels, availability, lead times, rights and exclusions \u2014 at the social-content rates already negotiated with WPP Media.",
  out:"Offer is linked to the relevant property and queued for WPP review.",
- func:["Configurable offer fields","Pricing","Rights","Availability","Edit & update","Scheduling & lead times","Repeat & standing offers"],
- wf:{kind:"form",name:"Create offer",fields:["Format","Channel","Rate card","Availability","Lead time","Rights & exclusions"]}},
+ func:["Configurable offer fields","WPP-negotiated rate card","Rights","Availability","Edit & update","Scheduling & lead times","Repeat & standing offers"],
+ callout:"WPP Media negotiates the social-content rates up front with publishers, IP holders and non-monetized media brands. The publisher lists at those agreed terms.",
+ wf:{kind:"form",name:"Create offer",fields:["Format","Channel","Agreed rate card","Availability","Lead time","Rights & exclusions"]}},
 
 {n:"04",act:"Set up",lens:["conn"],lane:"wpp",title:"WPP publishes listing",
  action:"Checks the profile and agreed offer details, then approves or requests corrections.",
