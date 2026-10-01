@@ -392,15 +392,15 @@ path.flow.live{animation:march 1s linear infinite}
 /* ---------- dock ---------- */
 .dock[hidden]{display:none}
 .dock{
-  flex:0 0 auto;height:254px;display:grid;
-  grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr) 316px;
+  flex:0 0 auto;height:252px;display:grid;
+  grid-template-columns:minmax(0,1fr) 352px;
   background:var(--dock-bg);
   border-top:1px solid var(--rule-hi);
   box-shadow:var(--inset-top);
   position:relative;
 }
 .dock > div{
-  padding:15px 22px 16px;border-right:1px solid var(--rule);
+  padding:14px 24px 15px;border-right:1px solid var(--rule);gap:12px;
   overflow:auto;min-width:0;position:relative;
   display:flex;flex-direction:column;
 }
@@ -439,6 +439,10 @@ path.flow.live{animation:march 1s linear infinite}
   background:var(--nc);box-shadow:var(--dot-sh);
 }
 .ph-sep{width:1px;height:12px;flex:0 0 1px;background:var(--rule-hi)}
+.lab{
+  font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--lab);margin:0 0 7px;
+}
 .ph-act{
   font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.18em;
   text-transform:uppercase;color:var(--lab);white-space:nowrap;
@@ -449,25 +453,24 @@ path.flow.live{animation:march 1s linear infinite}
   overflow:hidden;text-overflow:ellipsis;
 }
 
-.watermark{
-  position:absolute;right:-10px;top:50%;transform:translateY(-46%);
-  font-family:var(--disp);font-weight:800;font-size:148px;letter-spacing:-.07em;
-  color:var(--nc);opacity:.045;line-height:1;pointer-events:none;user-select:none;
-}
+.lede{display:flex;align-items:flex-start;gap:20px;flex:0 0 auto}
 .d-title{
-  font-family:var(--disp);font-weight:800;font-size:26px;letter-spacing:-.035em;
-  line-height:1.06;margin:0 0 10px;color:var(--title);text-wrap:balance;position:relative;
+  font-family:var(--disp);font-weight:800;font-size:25px;letter-spacing:-.035em;
+  line-height:1.04;margin:0;color:var(--title);text-wrap:balance;
+  flex:0 1 auto;max-width:44%;
 }
 .d-action{
-  font-size:14px;line-height:1.46;color:var(--action);margin:0;
-  max-width:42ch;position:relative;
+  font-size:14px;line-height:1.45;color:var(--action);margin:2px 0 0;
+  flex:1 1 0;min-width:0;border-left:1px solid var(--rule);padding-left:20px;
 }
 
 /* why-it-matters sits at the foot of pane 1, so its presence never
    reflows anything above it */
-#dCallout{margin-top:auto;flex:0 0 auto}
+.d-left{display:flex;flex-direction:column;gap:12px;min-width:0}
+#dCallout{flex:0 0 auto}
+#dCallout:empty{display:none}
 .callout{
-  margin:16px 0 0;
+  margin:0;
   display:flex;gap:10px;align-items:center;
   background:var(--callout-bg);
   border:1px solid var(--callout-br);
@@ -483,13 +486,23 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* the handoff is the payload of the whole diagram — treat it as an object */
 .handoff{
-  font-size:15px;line-height:1.4;font-weight:500;color:var(--title);
-  background:linear-gradient(90deg, rgb(var(--nc-rgb) / 13%), transparent 72%);
+  background:linear-gradient(90deg, rgb(var(--nc-rgb) / 12%), transparent 76%);
   border-left:3px solid var(--nc);border-radius:0 4px 4px 0;
-  padding:11px 14px;margin:0 0 17px;flex:0 0 auto;
-  box-shadow:var(--handoff-sh);
+  padding:10px 15px 11px;box-shadow:var(--handoff-sh);
 }
-.chips{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0;flex:0 0 auto}
+.handoff-lab{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--nc);margin:0 0 5px;
+}
+.handoff-txt{font-size:14.5px;line-height:1.38;font-weight:500;color:var(--title);margin:0}
+.d-body{
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:22px;align-items:start;flex:0 0 auto;
+}
+.func{display:flex;flex-direction:column;gap:8px}
+.func .lab{margin:0}
+.plan:empty{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0}
 .chips li{
   font-family:var(--mono);font-size:11px;font-weight:500;color:var(--chip-fg);
   background:var(--chip-bg);border:1px solid var(--chip-br);border-radius:3px;padding:4px 9px;
@@ -497,9 +510,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* a reference, not a requirement — dashed, quiet, pinned to the pane foot */
 .plan{
-  margin-top:auto;padding-top:10px;flex:0 0 auto;
-  display:flex;align-items:center;gap:7px;flex-wrap:wrap;
-  border-top:1px dashed var(--rule);
+  margin-left:auto;display:flex;align-items:center;gap:7px;flex-wrap:wrap;
 }
 .plan:empty{display:none}
 .plan b{
@@ -524,10 +535,10 @@ path.flow.live{animation:march 1s linear infinite}
 .wf-bar{display:flex;align-items:center;gap:4px;padding:6px 10px;border-bottom:1px solid var(--rule);background:var(--wf-barbg)}
 .wf-dot{width:5px;height:5px;border-radius:50%;background:var(--rule-hi)}
 .wf-name{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--nc);margin-left:6px}
-.wf-body{padding:10px;display:flex;flex-direction:column;gap:6px;flex:1 1 auto;min-height:0}
+.wf-body{padding:9px;display:flex;flex-direction:column;gap:5px;flex:1 1 auto;min-height:0;overflow:hidden}
 .wf-row{display:flex;gap:5px}
 .wf-fld{
-  border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px;
+  border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:3px 7px;
   font-family:var(--mono);font-size:9px;color:var(--wf-fg);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 0;
 }
@@ -546,7 +557,7 @@ path.flow.live{animation:march 1s linear infinite}
 .wf-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
 .wf-card{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:5px;display:flex;flex-direction:column;gap:4px}
 .wf-card.sel{border-color:var(--nc);box-shadow:var(--card-sel-sh)}
-.wf-av{height:16px;background:var(--wf-av);border-radius:2px}
+.wf-av{height:14px;background:var(--wf-av);border-radius:2px}
 .wf-ln{height:3px;background:var(--wf-ln);border-radius:2px}
 .wf-ln.s{width:60%}
 .wf-ln.q{width:38%}
@@ -559,7 +570,7 @@ path.flow.live{animation:march 1s linear infinite}
 .wf-bar-v{flex:1 1 0;background:var(--wf-ln);border-radius:2px 2px 0 0}
 .wf-bar-v.on{background:var(--nc);box-shadow:var(--bar-sh)}
 .wf-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
-.wf-kpi{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px;display:flex;flex-direction:column;gap:2px}
+.wf-kpi{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:3px 7px;display:flex;flex-direction:column;gap:1px}
 .wf-kpi b{font-family:var(--mono);font-size:11.5px;color:var(--title)}
 .wf-kpi span{font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
 .wf-list{display:flex;flex-direction:column;gap:4px}
@@ -568,7 +579,7 @@ path.flow.live{animation:march 1s linear infinite}
 
 /* ---------- narrow / short ---------- */
 @media (max-width:1180px){
-  .dock{grid-template-columns:minmax(0,1fr) 288px;height:266px}
+  .dock{grid-template-columns:minmax(0,1fr) 300px;height:272px}
   .dock #dCol1{grid-column:1;grid-row:1}
   .dock #dCol2{grid-column:1;grid-row:2;border-right:1px solid var(--rule);padding-top:0}
   .wfwrap{grid-column:2;grid-row:1 / 3}
@@ -582,9 +593,7 @@ path.flow.live{animation:march 1s linear infinite}
   .mast{flex-wrap:wrap}
   .mast h1{border-right:0;width:100%}
   .controls{margin-left:0;border-left:0;padding:0 16px 10px}
-  .watermark{font-size:96px}
-}
-@media (prefers-reduced-motion: reduce){
+  @media (prefers-reduced-motion: reduce){
   *{transition:none !important;animation:none !important}
 }
 
@@ -725,7 +734,6 @@ path.flow.live{animation:march 1s linear infinite}
   <section class="dock" id="dock" aria-live="polite" hidden>
     <button class="dock-close" id="dockClose" type="button" aria-label="Close detail">&times;</button>
     <div id="dCol1">
-      <div class="watermark" id="dWater"></div>
       <div class="pane-head">
         <span class="ph-dot"></span>
         <span class="ph-lab" id="dNum"></span>
@@ -734,19 +742,27 @@ path.flow.live{animation:march 1s linear infinite}
         <span class="ph-sep"></span>
         <span class="ph-act" id="dAct"></span>
       </div>
-      <h2 class="d-title" id="dTitle"></h2>
-      <p class="d-action" id="dAction"></p>
-      <div id="dCallout"></div>
-    </div>
-    <div id="dCol2">
-      <div class="pane-head">
-        <span class="ph-lab">Output &rarr; handoff</span>
-        <span class="ph-note">what the next step receives</span>
+
+      <div class="lede">
+        <h2 class="d-title" id="dTitle"></h2>
+        <p class="d-action" id="dAction"></p>
       </div>
-      <p class="handoff" id="dOut"></p>
-      <div class="pane-head"><span class="ph-lab">Functionality required</span></div>
-      <ul class="chips" id="dFunc"></ul>
-      <div class="plan" id="dPlan"></div>
+
+      <div class="d-body">
+      <div class="d-left">
+        <div class="handoff">
+          <p class="handoff-lab" id="dNext"></p>
+          <p class="handoff-txt" id="dOut"></p>
+        </div>
+        <div id="dCallout"></div>
+      </div>
+
+      <div class="func">
+        <span class="lab">Functionality required</span>
+        <ul class="chips" id="dFunc"></ul>
+        <span class="plan" id="dPlan"></span>
+      </div>
+      </div>
     </div>
     <div class="wfwrap" id="dWire"></div>
   </section>
@@ -992,7 +1008,7 @@ var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var el = {};
 ["board","dock","dockClose","hint","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
- "dFunc","dWire","dCallout","dWater","dAct","dPlan"].forEach(function(k){ el[k] = document.getElementById(k); });
+ "dFunc","dWire","dCallout","dAct","dPlan","dNext"].forEach(function(k){ el[k] = document.getElementById(k); });
 
 /* ---------------- render ---------------- */
 function elbow(x1,y1,x2,y2){
@@ -1197,12 +1213,15 @@ function select(i, scroll){
   el.canvas.style.setProperty("--nc", c);
   el.dock.style.setProperty("--nc", c);
   el.dock.style.setProperty("--nc-rgb", cssVar(LANES[s.lane].v+"-rgb") || "140 150 170");
-  el.dWater.textContent = s.n;
   el.dNum.textContent = "Step "+s.n;
   el.dActor.textContent = LANES[s.lane].label + (s.co ? " + "+LANES[s.co].label : "");
   el.dTitle.textContent = s.title;
   el.dAction.textContent = s.action;
   el.dOut.textContent = s.out;
+  var nxt = steps[i+1];
+  el.dNext.innerHTML = nxt
+    ? "Hands to &rarr; " + nxt.n + " &middot; " + nxt.title
+    : "Ends the flow &mdash; campaign closed";
   el.dFunc.innerHTML = s.func.map(function(f){ return "<li>"+f+"</li>"; }).join("");
   el.dAct.textContent = s.act || "";
   el.dPlan.innerHTML = s.plan
