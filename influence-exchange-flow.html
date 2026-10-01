@@ -206,31 +206,7 @@ body{
   margin-bottom:6px;-webkit-text-fill-color:var(--dim);
 }
 
-/* ---------- phase tabs ---------- */
-.tabs{display:flex;align-items:stretch;overflow-x:auto;gap:0}
-.tab{
-  appearance:none;background:transparent;border:0;
-  border-right:1px solid var(--rule);
-  padding:9px 20px 8px;text-align:left;cursor:pointer;
-  color:var(--dim);font-family:var(--body);font-size:13px;font-weight:600;
-  white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:3px;
-  position:relative;transition:color .18s,background .18s;
-}
-.tab em{
-  font-style:normal;font-family:var(--mono);font-size:8.5px;
-  letter-spacing:.15em;text-transform:uppercase;font-weight:500;opacity:.85;
-}
-.tab::after{
-  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
-  background:var(--tc,var(--wpp));opacity:0;transition:opacity .2s;
-}
-.tab:hover{color:var(--mute);background:var(--hover)}
-.tab[aria-selected="true"]{color:var(--text);background:var(--sel)}
-.tab[aria-selected="true"]::after{opacity:1;box-shadow:0 0 14px 1px var(--tc,var(--wpp))}
-.tab[aria-selected="true"] em{color:var(--tc,var(--wpp));opacity:1}
-.tab:focus-visible{outline:2px solid var(--wpp);outline-offset:-3px}
-
-.controls{display:flex;gap:6px;align-items:center;margin-left:auto;padding:0 20px;border-left:1px solid var(--rule)}
+.controls{display:flex;gap:6px;align-items:center;margin-left:auto;padding:0 20px}
 .ctrl-gap{width:1px;height:18px;background:var(--rule);margin:0 3px}
 .ctrl.theme{min-width:84px;justify-content:center}
 .ctrl{
@@ -299,6 +275,7 @@ body{
 
 /* ---------- board ---------- */
 .board{
+  position:relative;
   flex:1 1 auto;min-height:0;display:grid;
   grid-template-columns:164px minmax(0,1fr);
   background:var(--board-bg);
@@ -408,11 +385,6 @@ body{
   font-style:normal;font-family:var(--mono);font-size:8px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--nc);
 }
-.token{
-  position:absolute;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;
-  border-radius:50%;background:var(--token-fg);opacity:0;pointer-events:none;z-index:20;
-  box-shadow:var(--token-sh);
-}
 .branch-tag{
   position:absolute;font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--creator);background:var(--ground);
@@ -421,7 +393,17 @@ body{
 @keyframes march{to{stroke-dashoffset:-28}}
 path.flow.live{animation:march 1s linear infinite}
 
+.hint{
+  position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mute);background:var(--chip-bg);
+  border:1px solid var(--chip-br);border-radius:3px;padding:7px 14px;
+  pointer-events:none;z-index:10;
+}
+.hint[hidden]{display:none}
+
 /* ---------- dock ---------- */
+.dock[hidden]{display:none}
 .dock{
   flex:0 0 auto;height:254px;display:grid;
   grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr) 316px;
@@ -445,6 +427,15 @@ path.flow.live{animation:march 1s linear infinite}
   content:"";position:absolute;left:0;right:0;top:0;height:2px;
   background:var(--nc);box-shadow:var(--accent-line-sh);
 }
+
+#dWire .pane-head{padding-right:22px}
+.dock-close{
+  position:absolute;top:8px;right:10px;z-index:5;
+  appearance:none;background:transparent;border:0;cursor:pointer;
+  color:var(--dim);font-size:19px;line-height:1;padding:4px 7px;border-radius:3px;
+}
+.dock-close:hover{color:var(--text);background:var(--hover)}
+.dock-close:focus-visible{outline:2px solid var(--wpp);outline-offset:1px}
 
 /* every pane opens with the same header, so nothing jumps between steps */
 .pane-head{display:flex;align-items:center;gap:9px;margin:0 0 11px;flex:0 0 auto}
@@ -711,7 +702,7 @@ path.flow.live{animation:march 1s linear infinite}
     </div>
     <div class="cover-go">
       <button class="ctrl primary" id="coverGo" type="button">Open the flow</button>
-      <span class="cover-hint">or click anywhere &middot; press Play to walk it</span>
+      <span class="cover-hint">or click anywhere, then click any step</span>
     </div>
   </div>
 </div>
@@ -721,13 +712,11 @@ path.flow.live{animation:march 1s linear infinite}
 
   <header class="mast">
     <h1><span class="eyebrow">Project Roger Rabbit</span>Influence Exchange</h1>
-    <div class="tabs" role="tablist" aria-label="Platform phases" id="tabs"></div>
     <div class="controls">
       <button class="ctrl" id="guideBtn" type="button">Guide</button>
       <button class="ctrl theme" id="themeBtn" type="button"></button>
       <span class="ctrl-gap"></span>
       <button class="ctrl" id="prevBtn" type="button">&larr;</button>
-      <button class="ctrl primary" id="playBtn" type="button">&#9654;&nbsp; Play flow</button>
       <button class="ctrl" id="nextBtn" type="button">&rarr;</button>
     </div>
   </header>
@@ -741,12 +730,13 @@ path.flow.live{animation:march 1s linear infinite}
     <div class="scroller" id="scroller">
       <div class="canvas" id="canvas">
         <svg class="wires" id="wires" aria-hidden="true"></svg>
-        <div class="token" id="token"></div>
       </div>
     </div>
+    <div class="hint" id="hint">Click any step to see what happens</div>
   </div>
 
-  <section class="dock" id="dock" aria-live="polite">
+  <section class="dock" id="dock" aria-live="polite" hidden>
+    <button class="dock-close" id="dockClose" type="button" aria-label="Close detail">&times;</button>
     <div id="dCol1">
       <div class="watermark" id="dWater"></div>
       <div class="pane-head">
@@ -1018,13 +1008,13 @@ function laneTop(i){ return OFFY + PADY + ACT_H + i*LANE_H; }
 function nodeX(i){ return PADX + i*COL; }
 function nodeY(li){ return laneTop(li) + (LANE_H - NH)/2; }
 
-var phase = PHASES[0], cur = 0, lens = "all", playing = false, rafId = null, timerId = null;
+var phase = PHASES[0], cur = -1, lens = "all";
 var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["board","dock","tabs","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","lenses","cover","coverRoles","coverGo","rail","canvas","scroller","wires","token",
- "playBtn","prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
+["board","dock","dockClose","hint","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","lenses","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+ "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dWater","dAct","dPlan"].forEach(function(k){ el[k] = document.getElementById(k); });
 
 /* ---------------- capability lenses ---------------- */
@@ -1054,12 +1044,6 @@ function setLens(k){
     lensNote.innerHTML = "<b>" + hits + " of " + phase.steps.length + " steps</b>" + L.note;
   }
   paintLens();
-  /* land on the first step the lens touches, so the dock agrees with the board */
-  if (k !== "all"){
-    for (var i=0;i<phase.steps.length;i++){
-      if (inLens(phase.steps[i])){ select(i, true); break; }
-    }
-  }
 }
 function paintLens(){
   Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
@@ -1068,28 +1052,6 @@ function paintLens(){
     n.classList.toggle("off", !on);
     n.classList.toggle("lit", on && lens !== "all");
   });
-}
-
-/* ---------------- tabs ---------------- */
-PHASES.forEach(function(p,i){
-  var b = document.createElement("button");
-  b.className = "tab"; b.type = "button";
-  b.setAttribute("role","tab");
-  b.setAttribute("aria-selected", i===0 ? "true" : "false");
-  b.style.setProperty("--tc","var("+p.tc+")");
-  b.innerHTML = '<em>'+p.num+' &middot; '+p.status+'</em>'+p.tab;
-  b.addEventListener("click", function(){ setPhase(i); });
-  el.tabs.appendChild(b);
-});
-function setPhase(i){
-  stopPlay();
-  phase = PHASES[i]; cur = 0;
-  Array.prototype.forEach.call(el.tabs.children, function(t,j){
-    t.setAttribute("aria-selected", j===i ? "true" : "false");
-  });
-  el.scroller.scrollLeft = 0;
-  render();
-  setLens(lens);
 }
 
 /* ---------------- render ---------------- */
@@ -1193,7 +1155,7 @@ function render(){
                   (s.callout ? '<span class="star"></span>' : '')+
                   '<span class="peek"><b>Hands over</b><span>'+s.out+'</span>'+
                   (s.callout ? '<u>&#9733; '+s.callout+'</u>' : '')+'</span>';
-    b.addEventListener("click", function(){ stopPlay(); select(i, true); });
+    b.addEventListener("click", function(){ select(i, true); });
     el.canvas.appendChild(b);
 
     if (s.co){
@@ -1241,7 +1203,7 @@ function render(){
     el.canvas.appendChild(tag);
   }
 
-  select(cur < steps.length ? cur : 0, false);
+  select(cur < steps.length ? cur : -1, false);
   paintLens();
 
 }
@@ -1249,25 +1211,27 @@ function render(){
 /* ---------------- selection ---------------- */
 function select(i, scroll){
   cur = i;
-  var steps = phase.steps, s = steps[i];
+  var steps = phase.steps, none = (i < 0), s = none ? null : steps[i];
+
+  el.dock.hidden = none;
+  el.hint.hidden = !none;
 
   Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
     var ni = +n.getAttribute("data-i");
-    n.setAttribute("aria-current", ni===i ? "true" : "false");
-    n.classList.toggle("done", ni < i);
+    n.setAttribute("aria-current", (!none && ni === i) ? "true" : "false");
+    n.classList.toggle("done", !none && ni < i);
   });
   Array.prototype.forEach.call(el.wires.querySelectorAll("path.flow"), function(p){
     var pi = +p.getAttribute("data-i");
     var isB = p.getAttribute("data-branch") === "1";
-    var live = (pi === i-1);
-    p.setAttribute("opacity", pi < i ? "1" : ".3");
+    var live = (!none && pi === i-1);
+    p.setAttribute("opacity", (!none && pi < i) ? "1" : ".3");
     p.classList.toggle("live", live && !reduce);
     if (live){
       p.setAttribute("stroke", cssVar("--wire-live"));
       p.setAttribute("stroke-width","2.3");
       p.setAttribute("stroke-dasharray","7 6");
       p.setAttribute("marker-end","url(#ahl)");
-      /* a blur under a dark line reads as a smudge on paper — glow is dark-only */
       if (cssVar("--glow") === "1") p.setAttribute("filter","url(#glow)");
       else p.removeAttribute("filter");
     } else {
@@ -1279,14 +1243,15 @@ function select(i, scroll){
     }
   });
   Array.prototype.forEach.call(el.canvas.querySelectorAll(".act"), function(a){
-    a.classList.toggle("hot", a.getAttribute("data-act") === s.act);
+    a.classList.toggle("hot", !none && a.getAttribute("data-act") === s.act);
   });
   Array.prototype.forEach.call(el.rail.querySelectorAll(".rail-lane"), function(r){
-    r.classList.toggle("hot", r.getAttribute("data-lane") === s.lane);
+    r.classList.toggle("hot", !none && r.getAttribute("data-lane") === s.lane);
   });
-  Array.prototype.forEach.call(el.canvas.querySelectorAll(".lane-band"), function(r){
-    r.classList.toggle("hot", r.getAttribute("data-lane") === s.lane);
-  });
+
+  el.prevBtn.disabled = (i <= 0);
+  el.nextBtn.disabled = (!none && i === steps.length-1);
+  if (none) return;
 
   var c = "var("+LANES[s.lane].v+")";
   el.canvas.style.setProperty("--nc", c);
@@ -1306,13 +1271,11 @@ function select(i, scroll){
   el.dCallout.innerHTML = s.callout
     ? '<div class="callout"><span class="cmark">&#9733; Why it matters</span><p>'+s.callout+'</p></div>'
     : '';
+  el.dWire.style.setProperty("--nc", c);
   el.dWire.innerHTML =
     '<div class="pane-head"><span class="ph-lab">The screen</span>'+
     '<span class="ph-note">indicative, not a design</span></div>'+ wire(s.wf);
-  el.token.style.setProperty("--tc", c);
 
-  el.prevBtn.disabled = i===0;
-  el.nextBtn.disabled = i===steps.length-1;
   if (scroll !== false) ensureVisible(i);
 }
 
@@ -1324,61 +1287,16 @@ function ensureVisible(i){
   }
 }
 
-/* ---------------- playback ---------------- */
-function stopPlay(){
-  playing = false;
-  el.playBtn.innerHTML = "&#9654;&nbsp; Play flow";
-  if (rafId){ cancelAnimationFrame(rafId); rafId = null; }
-  if (timerId){ clearTimeout(timerId); timerId = null; }
-  el.token.style.opacity = 0;
-}
-function startPlay(){
-  playing = true;
-  el.playBtn.innerHTML = "&#10073;&#10073;&nbsp; Pause";
-  if (cur >= phase.steps.length-1) select(0, true);
-  timerId = setTimeout(advance, 700);
-}
-function advance(){
-  if (!playing) return;
-  if (cur >= phase.steps.length-1){ stopPlay(); return; }
-  var from = cur, to = cur+1;
-  var path = el.wires.querySelector('path[data-i="'+from+'"]');
-  if (!path || reduce){
-    select(to, true);
-    timerId = setTimeout(advance, 2200);
-    return;
-  }
-  ensureVisible(to);
-  var len = path.getTotalLength(), t0 = null, dur = 660;
-  el.token.style.opacity = 1;
-  function frame(ts){
-    if (!playing) return;
-    if (t0 === null) t0 = ts;
-    var p = Math.min(1, (ts-t0)/dur);
-    var e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
-    var pt = path.getPointAtLength(e*len);
-    el.token.style.left = pt.x+"px";
-    el.token.style.top = pt.y+"px";
-    if (p < 1) rafId = requestAnimationFrame(frame);
-    else {
-      el.token.style.opacity = 0;
-      select(to, true);
-      timerId = setTimeout(advance, 2000);
-    }
-  }
-  rafId = requestAnimationFrame(frame);
-}
-
-el.playBtn.addEventListener("click", function(){ playing ? stopPlay() : startPlay(); });
-el.prevBtn.addEventListener("click", function(){ stopPlay(); if (cur>0) select(cur-1,true); });
-el.nextBtn.addEventListener("click", function(){ stopPlay(); if (cur<phase.steps.length-1) select(cur+1,true); });
+el.prevBtn.addEventListener("click", function(){ if (cur>0) select(cur-1,true); });
+el.dockClose.addEventListener("click", function(){ select(-1,false); });
+el.nextBtn.addEventListener("click", function(){ if (cur<phase.steps.length-1) select(cur+1,true); });
 document.addEventListener("keydown", function(e){
   if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   if (!el.gate.hidden) return;
   if (!el.cover.hidden){ el.cover.hidden = true; return; }
-  if (e.key === "ArrowRight"){ stopPlay(); if (cur<phase.steps.length-1) select(cur+1,true); }
-  else if (e.key === "ArrowLeft"){ stopPlay(); if (cur>0) select(cur-1,true); }
-  else if (e.key === " "){ e.preventDefault(); playing ? stopPlay() : startPlay(); }
+  if (e.key === "Escape" && cur >= 0){ select(-1,false); return; }
+  if (e.key === "ArrowRight"){ if (cur<phase.steps.length-1) select(cur+1,true); }
+  else if (e.key === "ArrowLeft"){ if (cur>0) select(cur-1,true); }
 });
 
 /* ---------------- wireframes ---------------- */
@@ -1512,7 +1430,7 @@ el.gatePw.addEventListener("input", function(){ el.gateErr.hidden = true; });
 function hideCover(){ el.cover.hidden = true; }
 el.cover.addEventListener("click", hideCover);
 el.coverGo.addEventListener("click", hideCover);
-el.guideBtn.addEventListener("click", function(){ stopPlay(); el.cover.hidden = false; });
+el.guideBtn.addEventListener("click", function(){ el.cover.hidden = false; });
 
 /* ---------------- theme ---------------- */
 var root = document.documentElement;
