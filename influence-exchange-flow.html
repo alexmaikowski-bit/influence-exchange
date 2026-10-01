@@ -232,15 +232,15 @@ body{
   background:var(--panel);overflow-x:auto;
 }
 .lens-lab{
-  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
+  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.2em;
   text-transform:uppercase;color:var(--dim);white-space:nowrap;margin-right:2px;
 }
 .lens{
   appearance:none;cursor:pointer;white-space:nowrap;
-  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.07em;
+  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.07em;
   text-transform:uppercase;
   background:var(--chip-bg);color:var(--mute);
-  border:1px solid var(--chip-br);border-radius:3px;padding:4px 10px;
+  border:1px solid var(--chip-br);border-radius:3px;padding:6px 13px;
   transition:all .16s;
 }
 .lens:hover{color:var(--text);border-color:var(--dim)}
@@ -266,7 +266,7 @@ body{
   display:flex;align-items:center;padding-left:9px;
 }
 .act i{
-  font-style:normal;font-family:var(--mono);font-size:9px;font-weight:700;
+  font-style:normal;font-family:var(--mono);font-size:10px;font-weight:700;
   letter-spacing:.22em;text-transform:uppercase;color:var(--lab);
   background:var(--ground);padding:0 7px;transform:translateY(-10px);
 }
@@ -292,7 +292,7 @@ body{
   background:var(--lc);box-shadow:var(--railbar-sh);opacity:.55;transition:opacity .25s;
 }
 .rail-lane span{
-  font-family:var(--disp);font-weight:700;font-size:10.5px;
+  font-family:var(--disp);font-weight:700;font-size:12px;
   letter-spacing:.11em;text-transform:uppercase;line-height:1.2;
   color:var(--mute);transition:color .25s,text-shadow .25s;
 }
@@ -314,10 +314,10 @@ body{
 
 /* ---------- nodes ---------- */
 .node{
-  position:absolute;width:156px;
+  position:absolute;width:188px;
   background:linear-gradient(160deg,var(--card) 0%,var(--card-2) 100%);
   border:1px solid var(--rule-hi);border-radius:5px;
-  padding:7px 10px 8px;cursor:pointer;text-align:left;
+  padding:9px 13px 11px;cursor:pointer;text-align:left;
   font-family:var(--body);color:var(--text);
   display:flex;flex-direction:column;gap:3px;
   box-shadow:var(--node-sh);
@@ -331,10 +331,10 @@ body{
 .node:hover::before{opacity:1;box-shadow:0 0 16px 1px var(--nc)}
 .node:focus-visible{outline:2px solid var(--nc);outline-offset:3px}
 .node .n{
-  font-family:var(--mono);font-size:9px;font-weight:700;
+  font-family:var(--mono);font-size:10.5px;font-weight:700;
   letter-spacing:.16em;color:var(--nc);
 }
-.node .t{font-size:11.5px;font-weight:600;line-height:1.24;letter-spacing:-.008em}
+.node .t{font-size:14px;font-weight:600;line-height:1.26;letter-spacing:-.012em}
 .node[aria-current="true"]{
   border-color:var(--nc);transform:translateY(-3px) scale(1.035);
   background:var(--card-on);
@@ -358,7 +358,7 @@ body{
   clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);
 }
 .peek{
-  position:absolute;top:calc(100% + 9px);left:-1px;width:228px;
+  position:absolute;top:calc(100% + 9px);left:-1px;width:252px;
   background:var(--peek-bg);border:1px solid var(--nc);border-radius:5px;
   padding:9px 11px;z-index:30;display:none;
   box-shadow:var(--peek-sh);
@@ -370,37 +370,61 @@ body{
   display:block;font-family:var(--mono);font-size:8px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--nc);font-weight:500;margin-bottom:4px;
 }
-.peek span{display:block;font-size:11px;line-height:1.38;color:var(--text)}
+.peek span{display:block;font-size:12px;line-height:1.4;color:var(--text)}
 .peek u{
   display:block;text-decoration:none;margin-top:7px;padding-top:6px;
   border-top:1px solid var(--rule-hi);
   font-family:var(--mono);font-size:9px;color:var(--gold);letter-spacing:.02em;line-height:1.4;
 }
 .ghost{
-  position:absolute;width:156px;height:22px;border:1px dashed var(--nc);
+  position:absolute;width:188px;height:26px;border:1px dashed var(--nc);
   border-radius:4px;display:flex;align-items:center;justify-content:center;
   background:var(--ghost-bg);opacity:.9;
 }
 .ghost i{
-  font-style:normal;font-family:var(--mono);font-size:8px;
+  font-style:normal;font-family:var(--mono);font-size:9.5px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--nc);
 }
 .branch-tag{
-  position:absolute;font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;
+  position:absolute;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--creator);background:var(--ground);
   padding:0 7px;text-shadow:var(--tag-sh);
 }
 @keyframes march{to{stroke-dashoffset:-28}}
 path.flow.live{animation:march 1s linear infinite}
 
+.edge{
+  position:absolute;top:0;bottom:0;width:86px;pointer-events:none;
+  z-index:8;opacity:0;transition:opacity .22s;
+}
+.edge.l{left:164px;background:linear-gradient(90deg,var(--ground) 18%,transparent)}
+.edge.r{right:0;background:linear-gradient(270deg,var(--ground) 18%,transparent)}
+.board.more-l .edge.l,.board.more-r .edge.r{opacity:1}
+
+.nudge{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:9;
+  appearance:none;cursor:pointer;opacity:0;pointer-events:none;
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--rule-hi);color:var(--text);
+  font-size:15px;line-height:1;box-shadow:var(--node-sh);
+  transition:opacity .22s,border-color .18s,transform .18s;
+}
+.nudge.l{left:176px}
+.nudge.r{right:12px}
+.board.more-l .nudge.l,.board.more-r .nudge.r{opacity:1;pointer-events:auto}
+.nudge:hover{border-color:var(--wpp);transform:translateY(-50%) scale(1.08)}
+.nudge:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
+
 .hint{
   position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
-  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--mute);background:var(--chip-bg);
-  border:1px solid var(--chip-br);border-radius:3px;padding:7px 14px;
-  pointer-events:none;z-index:10;
+  border:1px solid var(--chip-br);border-radius:3px;padding:9px 18px;
+  pointer-events:none;z-index:10;white-space:nowrap;
 }
 .hint[hidden]{display:none}
+.hint em{font-style:normal;color:var(--wpp)}
 
 /* ---------- dock ---------- */
 .dock[hidden]{display:none}
@@ -504,7 +528,7 @@ path.flow.live{animation:march 1s linear infinite}
 }
 .chips{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0;flex:0 0 auto}
 .chips li{
-  font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--chip-fg);
+  font-family:var(--mono);font-size:11px;font-weight:500;color:var(--chip-fg);
   background:var(--chip-bg);border:1px solid var(--chip-br);border-radius:3px;padding:4px 9px;
 }
 
@@ -732,7 +756,11 @@ path.flow.live{animation:march 1s linear infinite}
         <svg class="wires" id="wires" aria-hidden="true"></svg>
       </div>
     </div>
-    <div class="hint" id="hint">Click any step to see what happens</div>
+    <div class="edge l"></div>
+    <div class="edge r"></div>
+    <button class="nudge l" id="nudgeL" type="button" aria-label="Scroll left">&#8249;</button>
+    <button class="nudge r" id="nudgeR" type="button" aria-label="Scroll right">&#8250;</button>
+    <div class="hint" id="hint">15 steps &middot; click any one to see what happens &middot; <em>scroll right for the rest &rarr;</em></div>
   </div>
 
   <section class="dock" id="dock" aria-live="polite" hidden>
@@ -1001,7 +1029,7 @@ function defs(){
 }
 
 /* ---------------- geometry ---------------- */
-var COL = 178, NW = 156, PADX = 26, PADY = 16;
+var COL = 212, NW = 188, PADX = 28, PADY = 16;
 var LANE_H = 92, NH = 60, OFFY = 0, ACT_H = 26;
 
 function laneTop(i){ return OFFY + PADY + ACT_H + i*LANE_H; }
@@ -1013,7 +1041,7 @@ var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["board","dock","dockClose","hint","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","lenses","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+["board","dock","dockClose","hint","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","lenses","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dWater","dAct","dPlan"].forEach(function(k){ el[k] = document.getElementById(k); });
 
@@ -1072,7 +1100,7 @@ function render(){
   var avail = el.board.clientHeight;
   lastAvail = avail;
   LANE_H = Math.max(66, Math.min(132, Math.floor((avail - PADY*2 - ACT_H) / lanes.length)));
-  NH = Math.max(48, Math.min(64, LANE_H - 28));
+  NH = Math.max(58, Math.min(78, LANE_H - 26));
 
   var H = PADY*2 + ACT_H + lanes.length*LANE_H;
   var W = PADX*2 + (steps.length-1)*COL + NW;
@@ -1129,7 +1157,7 @@ function render(){
     if (ci < 0) return;
     var cx = nodeX(i)+NW/2;
     var ya = ci > li ? nodeY(li)+NH : nodeY(li);
-    var yb = ci > li ? nodeY(ci)+(NH-22)/2 : nodeY(ci)+(NH+22)/2;
+    var yb = ci > li ? nodeY(ci)+(NH-26)/2 : nodeY(ci)+(NH+26)/2;
     paths += '<line x1="'+cx+'" y1="'+ya+'" x2="'+cx+'" y2="'+yb+'" stroke="'+
              (cssVar(LANES[s.co].v)||WIRE)+'" stroke-width="1.5" stroke-dasharray="3 3" opacity=".6"></line>';
   });
@@ -1164,7 +1192,7 @@ function render(){
         var g = document.createElement("div");
         g.className = "ghost";
         g.style.left = nodeX(i)+"px";
-        g.style.top = (nodeY(ci)+(NH-22)/2)+"px";
+        g.style.top = (nodeY(ci)+(NH-26)/2)+"px";
         g.style.setProperty("--nc","var("+LANES[s.co].v+")");
         g.innerHTML = '<i>with '+LANES[s.co].label+'</i>';
         el.canvas.appendChild(g);
@@ -1205,6 +1233,7 @@ function render(){
 
   select(cur < steps.length ? cur : -1, false);
   paintLens();
+  syncEdges();
 
 }
 
@@ -1279,17 +1308,33 @@ function select(i, scroll){
   if (scroll !== false) ensureVisible(i);
 }
 
+/* the flow runs wider than any screen — say so, and make it reachable */
+function syncEdges(){
+  var sc = el.scroller, max = sc.scrollWidth - sc.clientWidth;
+  el.board.classList.toggle("more-l", sc.scrollLeft > 8);
+  el.board.classList.toggle("more-r", sc.scrollLeft < max - 8);
+}
+function nudge(dir){
+  var sc = el.scroller, by = Math.round(sc.clientWidth * 0.8) * dir;
+  if (reduce) sc.scrollLeft += by; else sc.scrollBy({left:by, behavior:"smooth"});
+}
+el.nudgeL.addEventListener("click", function(){ nudge(-1); });
+el.nudgeR.addEventListener("click", function(){ nudge(1); });
+el.scroller.addEventListener("scroll", syncEdges, {passive:true});
+
 function ensureVisible(i){
   var x = nodeX(i), sc = el.scroller;
   if (x < sc.scrollLeft + 40 || x + NW > sc.scrollLeft + sc.clientWidth - 40){
     var target = Math.max(0, x - sc.clientWidth/2 + NW/2);
     if (reduce) sc.scrollLeft = target; else sc.scrollTo({left:target, behavior:"smooth"});
   }
+  setTimeout(syncEdges, 320);
 }
 
 el.prevBtn.addEventListener("click", function(){ if (cur>0) select(cur-1,true); });
 el.dockClose.addEventListener("click", function(){ select(-1,false); });
 el.nextBtn.addEventListener("click", function(){ if (cur<phase.steps.length-1) select(cur+1,true); });
+el.prevBtn.disabled = true;
 document.addEventListener("keydown", function(e){
   if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   if (!el.gate.hidden) return;
