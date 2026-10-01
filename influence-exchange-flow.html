@@ -225,38 +225,6 @@ body{
 }
 .ctrl.primary:hover{box-shadow:var(--primary-sh-h);color:var(--on-accent)}
 
-/* ---------- capability lenses ---------- */
-.lenses{
-  display:flex;align-items:center;gap:7px;flex:0 0 auto;
-  padding:6px 20px;border-bottom:1px solid var(--rule);
-  background:var(--panel);overflow-x:auto;
-}
-.lens-lab{
-  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--dim);white-space:nowrap;margin-right:2px;
-}
-.lens{
-  appearance:none;cursor:pointer;white-space:nowrap;
-  font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.07em;
-  text-transform:uppercase;
-  background:var(--chip-bg);color:var(--mute);
-  border:1px solid var(--chip-br);border-radius:3px;padding:6px 13px;
-  transition:all .16s;
-}
-.lens:hover{color:var(--text);border-color:var(--dim)}
-.lens:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
-.lens[aria-pressed="true"]{
-  background:var(--text);color:var(--void);border-color:var(--text);font-weight:700;
-}
-.lens-note{
-  font-size:12px;color:var(--lab);margin-left:6px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.lens-note b{
-  font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--text);
-  margin-right:7px;font-weight:700;
-}
-
 /* ---------- acts: the five beats of the deal ---------- */
 .act{
   position:absolute;height:19px;
@@ -346,11 +314,6 @@ body{
 .node.branch .t{font-weight:500}
 .node.done{opacity:.62}
 .node.done .t{font-weight:500}
-/* lens state is declared last so it beats .done on steps already walked */
-.node.lit{box-shadow:0 0 0 1px var(--lab), var(--node-sh)}
-.node.off{opacity:.17;box-shadow:none;filter:grayscale(.85)}
-.node.off:hover{transform:none;box-shadow:none;border-color:var(--rule-hi)}
-.node.off .star{display:none}
 
 .star{
   position:absolute;top:-7px;right:-6px;width:14px;height:14px;
@@ -745,10 +708,6 @@ path.flow.live{animation:march 1s linear infinite}
     </div>
   </header>
 
-  <div class="lenses" id="lenses">
-    <span class="lens-lab">Show me</span>
-  </div>
-
   <div class="board" id="board">
     <div class="rail" id="rail"></div>
     <div class="scroller" id="scroller">
@@ -985,16 +944,6 @@ var EXCHANGE = [
  wf:{kind:"chart",name:"Fees & close",rows:["Transaction fee","Production fee","Invoiced","Closed"]}}
 ];
 
-var LENSES = [
-  {k:"all",  label:"Everything", note:""},
-  {k:"deal", label:"Deal mechanics",
-   note:"Brief-led custom content, quotes, approvals, multiple posts, scheduling and repeat bookings."},
-  {k:"conn", label:"Connectors",
-   note:"APIs and connectors that let Goat / Obviously add discovery, insights and reporting."},
-  {k:"data", label:"Comparable data",
-   note:"Audience and post-level organic and paid data; comparable creator and publisher metrics."}
-];
-
 var PHASES = [
   {id:"buy", num:"Phase 1", tab:"Buy publisher content", status:"Core MVP", tc:"--publisher",
    title:"A new way to transact with publishers by buying content",
@@ -1036,51 +985,14 @@ function laneTop(i){ return OFFY + PADY + ACT_H + i*LANE_H; }
 function nodeX(i){ return PADX + i*COL; }
 function nodeY(li){ return laneTop(li) + (LANE_H - NH)/2; }
 
-var phase = PHASES[0], cur = -1, lens = "all";
+var phase = PHASES[0], cur = -1;
 var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["board","dock","dockClose","hint","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","lenses","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+["board","dock","dockClose","hint","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dWater","dAct","dPlan"].forEach(function(k){ el[k] = document.getElementById(k); });
-
-/* ---------------- capability lenses ---------------- */
-LENSES.forEach(function(L){
-  var b = document.createElement("button");
-  b.className = "lens"; b.type = "button";
-  b.setAttribute("aria-pressed", L.k === "all" ? "true" : "false");
-  b.textContent = L.label;
-  b.addEventListener("click", function(){ setLens(L.k); });
-  el.lenses.appendChild(b);
-});
-var lensNote = document.createElement("span");
-lensNote.className = "lens-note";
-el.lenses.appendChild(lensNote);
-
-function inLens(st){ return lens === "all" || !!(st.lens && st.lens.indexOf(lens) > -1); }
-
-function setLens(k){
-  lens = k;
-  Array.prototype.forEach.call(el.lenses.querySelectorAll(".lens"), function(b,i){
-    b.setAttribute("aria-pressed", LENSES[i].k === k ? "true" : "false");
-  });
-  var L = LENSES.filter(function(x){ return x.k === k; })[0];
-  if (k === "all"){ lensNote.innerHTML = ""; }
-  else {
-    var hits = phase.steps.filter(inLens).length;
-    lensNote.innerHTML = "<b>" + hits + " of " + phase.steps.length + " steps</b>" + L.note;
-  }
-  paintLens();
-}
-function paintLens(){
-  Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
-    var st = phase.steps[+n.getAttribute("data-i")];
-    var on = !!inLens(st);
-    n.classList.toggle("off", !on);
-    n.classList.toggle("lit", on && lens !== "all");
-  });
-}
 
 /* ---------------- render ---------------- */
 function elbow(x1,y1,x2,y2){
@@ -1232,7 +1144,6 @@ function render(){
   }
 
   select(cur < steps.length ? cur : -1, false);
-  paintLens();
   syncEdges();
 
 }
@@ -1514,7 +1425,6 @@ if (window.ResizeObserver){
 
 syncThemeBtn();
 render();
-setLens("all");
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 </script>
