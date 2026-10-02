@@ -781,28 +781,33 @@ path.flow.live{animation:march 1s linear infinite}
 .cover .eyebrow{margin-bottom:10px}
 .cover h2{
   font-family:var(--disp);font-weight:800;font-size:clamp(34px,5.4vw,56px);
-  letter-spacing:-.04em;line-height:.98;margin:0 0 16px;
+  letter-spacing:-.04em;line-height:.98;margin:0 0 20px;
   background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .cover .lede{
-  font-size:16px;line-height:1.5;color:var(--action);margin:0 0 24px;max-width:60ch;
+  font-size:16px;line-height:1.55;color:var(--action);margin:0 0 34px;
+  max-width:58ch;text-wrap:pretty;
 }
 .cover .lede b{color:var(--title);font-weight:600}
-.cover-grid{display:flex;flex-wrap:wrap;gap:26px 44px;margin-bottom:26px}
+.cover-grid{display:flex;flex-wrap:wrap;gap:34px 44px;margin-bottom:34px}
 .cover-blk{min-width:300px}
 .cover-blk.beats{flex:1 1 100%}
 .cover-blk > p{
   font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--mute);margin:0 0 12px;
+  text-transform:uppercase;color:var(--mute);margin:0 0 15px;
 }
-.cover-blk.beats > p{font-size:10px;color:var(--wpp);margin-bottom:12px}
-.cover-roles{display:flex;flex-direction:column;gap:10px}
-.cover-role{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:500;color:var(--title)}
+.cover-blk.beats > p{color:var(--wpp)}
+.cover-roles{display:flex;flex-direction:column;gap:11px}
+.cover-role{
+  display:grid;grid-template-columns:12px minmax(0,186px) minmax(0,1fr);
+  align-items:center;gap:0 15px;
+  font-size:16px;font-weight:500;color:var(--title);
+}
 .cover-role i{
   font-style:normal;width:11px;height:11px;flex:0 0 11px;border-radius:50%;
   background:var(--rc);box-shadow:var(--role-dot-sh);
 }
-.cover-role u{text-decoration:none;color:var(--mute);font-size:14px;margin-left:auto;padding-left:18px;white-space:nowrap}
+.cover-role u{text-decoration:none;color:var(--mute);font-size:14px;white-space:nowrap}
 .cover-acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .cover-act{
   font-family:var(--disp);font-size:16px;font-weight:700;letter-spacing:.05em;
@@ -813,8 +818,8 @@ path.flow.live{animation:march 1s linear infinite}
 }
 .cover-arrow{color:var(--wpp);font-size:17px;font-weight:700}
 .cover-go{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  border-top:1px solid var(--rule);padding-top:20px;
+  display:flex;align-items:center;gap:28px;flex-wrap:wrap;
+  border-top:1px solid var(--rule);padding-top:28px;
 }
 @keyframes cta-pulse{
   0%,100%{box-shadow:0 0 0 0 rgb(var(--wpp-rgb) / 42%), 0 0 26px -8px rgb(var(--wpp-rgb) / 90%)}
@@ -822,7 +827,7 @@ path.flow.live{animation:march 1s linear infinite}
 }
 #coverGo{animation:cta-pulse 2.3s ease-in-out infinite}
 #coverGo:hover{animation-play-state:paused}
-.cover-hint{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.cover-hint{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--mute)}
 </style>
 
 <div class="gate" id="gate">
