@@ -24,7 +24,8 @@
   --wpp:#00F08A;       --wpp-rgb:0 240 138;
   --client:#B4F03C;    --client-rgb:180 240 60;
   --paid:#9D7CFF;      --paid-rgb:157 124 255;
-  --gold:#FFD63D;
+  --gold:#FFD63D; --gold-rgb:255 214 61;
+  --loop:#8B9AAF;
 
   --grad:linear-gradient(100deg,#3D8BFF 0%,#22E0F0 46%,#00F08A 100%);
 
@@ -121,7 +122,8 @@
   --wpp:#047857;       --wpp-rgb:4 120 87;
   --client:#4D7C0F;    --client-rgb:77 124 15;
   --paid:#6D28D9;      --paid-rgb:109 40 217;
-  --gold:#B45309; --gold-line:#D97706;
+  --gold:#B45309; --gold-line:#D97706; --gold-rgb:217 119 6;
+  --loop:#64748B;
   --grad:linear-gradient(100deg,#1554D6 0%,#0E7490 46%,#047857 100%);
 
   /* depth here is rings and soft tinted shadow, never glow */
@@ -356,6 +358,12 @@ body{
   position:absolute;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--creator);background:var(--ground);
   padding:0 7px;text-shadow:var(--tag-sh);
+}
+.loop-tag{
+  position:absolute;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--loop);background:var(--ground);padding:2px 8px;
+  border:1px dashed var(--loop);border-radius:3px;white-space:nowrap;
 }
 @keyframes march{to{stroke-dashoffset:-28}}
 path.flow.live{animation:march 1s linear infinite}
@@ -628,6 +636,19 @@ path.flow.live{animation:march 1s linear infinite}
 .wf-kpi{border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:3px 7px;display:flex;flex-direction:column;gap:1px}
 .wf-kpi b{font-family:var(--mono);font-size:11.5px;color:var(--title)}
 .wf-kpi span{font-family:var(--mono);font-size:7.5px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.wf-cmp{display:flex;flex-direction:column;gap:6px;flex:1 1 auto}
+.wf-cmp-h,.wf-cmp-r{display:grid;grid-template-columns:76px repeat(3,1fr);gap:5px;align-items:center}
+.wf-cmp-h b{
+  font-family:var(--mono);font-size:7px;font-weight:500;letter-spacing:.06em;
+  color:var(--nc);border:1px solid currentColor;border-radius:2px;padding:1px 0;text-align:center;
+}
+.wf-cmp-r span{font-family:var(--mono);font-size:7.5px;color:var(--wf-fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wf-cmp-r em{display:block;height:8px;background:var(--wf-ln);border-radius:2px;overflow:hidden}
+.wf-cmp-r em i{display:block;height:100%;background:var(--wf-br);border-radius:2px}
+.wf-cmp-r em i.on{background:var(--nc)}
+.wf-li.warn{border-color:var(--gold-line);background:rgb(var(--gold-rgb) / 10%)}
+.wf-tag.warn{color:var(--gold-line)}
+.wf-btn.blocked{background:transparent;color:var(--gold-line);border:1px dashed var(--gold-line);box-shadow:none}
 .wf-list{display:flex;flex-direction:column;gap:4px}
 .wf-li{display:flex;align-items:center;gap:6px;border:1px solid var(--wf-br);background:var(--wf-fld);border-radius:3px;padding:4px 7px}
 .wf-li .wf-ln{flex:1 1 auto}
@@ -955,15 +976,16 @@ var BUY = [
 
 {n:"05",act:"Match",lens:["conn", "data"],lane:"wpp",title:"WPP discovers partners",
  action:"Searches and compares publisher and creator options against the client's audience, brief and budget.",
- out:"Relevant candidates and live offers returned — publishers and creators side by side.",
- func:["Search & filter","Comparable audience data","Connector: Goat / Obviously discovery"],
+ out:"Candidates returned side by side on the same measures — audience fit, performance, formats and commercial terms.",
+ func:["Search & filter","Side-by-side comparison","Comparable audience data","Connector: Goat / Obviously discovery"],
  callout:"Publishers and creators in one search, with comparable numbers. This is the unlock.",
- wf:{kind:"grid",name:"Discovery",fields:["Audience","Budget","Format"],tags:["Publisher","Creator","Publisher"]}},
+ wf:{kind:"compare",name:"Compare partners",cols:["Publisher","Creator","Publisher"],
+     rows:[["Audience fit",82,54,66],["Performance",61,88,47],["Formats",74,74,52],["Commercial terms",58,70,85]]}},
 
 {n:"06",act:"Match",lane:"wpp",co:"client",title:"WPP shortlists, client selects",
- action:"The team shares indicative options and records the client's preferred partner.",
- out:"Selected partner and offer are linked to the campaign.",
- func:["Shortlists","Share & export","Selection and approval record"],
+ action:"The client receives a shortlist of indicative options to review; their choice is recorded back in the platform.",
+ out:"The client's selection feeds back in — chosen partner and offer linked to the campaign.",
+ func:["Client-facing shortlist","Share to client","Selection returns to the platform","Approval record"],
  wf:{kind:"grid",name:"Shortlist",fields:["3 options shared"],tags:["Selected","Option","Option"],cta:"Record selection"}},
 
 {n:"07",plan:["Brief / quote routing"],act:"Agree",lens:["deal"],lane:"wpp",title:"WPP submits brief",
@@ -973,9 +995,10 @@ var BUY = [
  wf:{kind:"form",name:"Campaign brief",fields:["Objective","Audience","Deliverables & post count","KPIs","Budget & dates","Requested rights"]}},
 
 {n:"08",plan:["Brief / quote routing"],act:"Agree",lens:["deal"],lane:"publisher",title:"Publisher confirms scope",
- action:"Confirms availability and quotes scope, timing, price and rights; resolves exceptions with WPP.",
- out:"Agreed proposal is ready for client approval.",
- func:["Messaging","Quote versions","Availability","Acceptance record"],
+ action:"Quotes scope, timing, price and rights. WPP and the publisher revise in-platform until both agree — a loop, not a one-shot booking.",
+ out:"Terms agreed between WPP and the publisher, and those agreed terms carry into client approval.",
+ func:["In-platform negotiation","Revise price, scope, timing, rights","Quote versions & history","Availability","Acceptance record"],
+ callout:"Custom content is negotiated, not instantly booked. The revision loop is part of the flow, not an exception to it.",
  wf:{kind:"thread",name:"Quote & scope",fields:["Availability confirmed","Price v2","Rights window","Exception raised"]}},
 
 {n:"09",act:"Agree",lens:["deal"],lane:"client",title:"Client approves, parties contract",
@@ -986,28 +1009,30 @@ var BUY = [
 
 {n:"10",plan:["Production / approvals"],act:"Make",lens:["deal"],lane:"publisher",title:"Publisher produces, uploads",
  action:"The publisher's social team creates the custom content and submits drafts.",
- out:"Draft assets routed to Goat and the required brand reviewers.",
+ out:"Drafts enter review — Goat / Obviously first, the brand second.",
  func:["Asset uploads","Versions","Production status","Notifications"],
  wf:{kind:"assets",name:"Production",fields:["Draft v1","Draft v2","Routed to reviewers"]}},
 
-{n:"11",plan:["Production / approvals"],act:"Make",lens:["deal"],lane:"client",title:"Goat / brand approves",
- action:"Reviews drafts, requests revisions and signs off the final assets.",
- out:"Approved version and the full review trail are retained.",
- func:["Comments","Review routing","Version control","Final approval"],
- wf:{kind:"review",name:"Content review",fields:["Comment thread","Revision requested","Version 3"],cta:"Approve final"}},
+{n:"11",plan:["Production / approvals"],act:"Make",lens:["deal"],lane:"client",title:"Goat reviews, brand approves",
+ action:"Goat / Obviously reviews the drafts internally and routes them on. The brand's sign-off is the gate that clears the publisher to post.",
+ out:"Two recorded approvals — internal review, then final brand sign-off — with the full trail retained.",
+ func:["Two-stage approval","Named approver per stage","Approval status visible to both parties","Comments & revision requests","Version control"],
+ callout:"Internal review and brand sign-off are separate gates. Nothing posts until the brand's is green.",
+ wf:{kind:"review",name:"Approvals",fields:["Goat review — cleared","Brand reviewer — pending","Version 3"],cta:"Clear to post"}},
 
 {n:"12",plan:["Posting / paid access"],act:"Make",lens:["data"],lane:"publisher",title:"Publisher posts, grants access",
  action:"Publishes on the agreed handles and dates; supplies live links and paid amplification permissions.",
- out:"Published assets ready for the paid team to activate.",
- func:["Live links","Posting status","Post-level asset IDs","Authorization & expiry"],
- callout:"Paid rights travel with the asset — no separate chase for permissions.",
+ out:"One activation-ready asset: live link, paid authorization, usage rights and expiry, all attached to the post.",
+ func:["Live links","Posting status","Post-level asset IDs","Authorization & expiry","Readiness check before handoff"],
+ callout:"The paid team receives one activation-ready asset — not a chase for permissions.",
  wf:{kind:"links",name:"Live links & rights",fields:["Post URL","Asset ID","Paid authorization","Expiry"]}},
 
 {n:"13",plan:["Posting / paid access"],act:"Measure",lens:["conn", "data"],lane:"paid",title:"Paid team amplifies",
- action:"Runs the approved content on the agreed social platforms, inside the usage rights.",
+ action:"Receives the activation-ready asset and runs it on the agreed platforms, inside the usage rights. Anything outstanding blocks activation until it is cleared.",
  out:"Paid activity is associated with the content and the campaign.",
- func:["Media-platform handoff","Usage tracking","Paid data returned to the record"],
- wf:{kind:"links",name:"Media handoff",fields:["Platform","Usage window","Spend","Rights check"]}},
+ func:["Activation readiness check","Outstanding items flagged in-platform","Media-platform handoff","Usage tracking","Paid data returned to the record"],
+ callout:"Whatever is missing gets flagged here, in the platform — not chased over email.",
+ wf:{kind:"links",name:"Activation readiness",fields:["Live link","Usage window","Paid authorization","Expiry date"],flag:3,cta:"Activate"}},
 
 {n:"14",plan:["Performance / delivery"],act:"Measure",lens:["conn", "data"],lane:"paid",title:"Team measures performance",
  action:"Collects organic and paid results and reports against the campaign KPIs.",
@@ -1123,6 +1148,8 @@ function defs(){
       '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--wire")+'"></polygon></marker>'+
     '<marker id="ahb" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto">'+
       '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--creator")+'"></polygon></marker>'+
+    '<marker id="ahloop" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto">'+
+      '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--loop")+'"></polygon></marker>'+
     '<marker id="ahl" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.4" markerHeight="5.4" orient="auto">'+
       '<polygon points="0,1 8,4 0,7" fill="'+cssVar("--wire-live")+'"></polygon></marker>'+
     '<filter id="glow" x="-70%" y="-70%" width="240%" height="240%">'+
@@ -1191,7 +1218,7 @@ function render(){
   el.canvas.style.minHeight = FULL+"px";
   Array.prototype.slice.call(el.canvas.querySelectorAll(".node,.ghost,.lane-band,.branch-tag"))
     .forEach(function(n){ n.remove(); });
-  Array.prototype.slice.call(el.canvas.querySelectorAll(".act")).forEach(function(n){ n.remove(); });
+  Array.prototype.slice.call(el.canvas.querySelectorAll(".act,.loop-tag")).forEach(function(n){ n.remove(); });
 
   lanes.forEach(function(k,i){
     var b = document.createElement("div");
@@ -1228,6 +1255,24 @@ function render(){
     paths += '<line x1="'+cx+'" y1="'+ya+'" x2="'+cx+'" y2="'+yb+'" stroke="'+
              (cssVar(LANES[s.co].v)||WIRE)+'" stroke-width="1.5" stroke-dasharray="3 3" opacity=".6"></line>';
   });
+
+  /* the negotiation round-trip: a back edge from 08 to 07, routed under the lane
+     so it never crosses the forward path */
+  var i7 = -1, i8 = -1;
+  steps.forEach(function(st,i){ if (st.n === "07") i7 = i; if (st.n === "08") i8 = i; });
+  var loopMid = null;
+  if (i7 > -1 && i8 > -1){
+    var l7 = lanes.indexOf(steps[i7].lane), l8 = lanes.indexOf(steps[i8].lane);
+    var x8c = nodeX(i8) + NW/2, x7c = nodeX(i7) + NW/2;
+    var yUnder = nodeY(l7) + NH + 17, lr = 9;
+    paths += '<path class="loop" fill="none" stroke="'+cssVar("--loop")+'" stroke-width="1.7"'+
+      ' stroke-dasharray="6 5" marker-end="url(#ahloop)" opacity=".9" d="'+
+      'M'+x8c+' '+(nodeY(l8)+NH)+
+      ' V'+(yUnder-lr)+' Q'+x8c+' '+yUnder+' '+(x8c-lr)+' '+yUnder+
+      ' H'+(x7c+lr)+' Q'+x7c+' '+yUnder+' '+x7c+' '+(yUnder-lr)+
+      ' V'+(nodeY(l7)+NH+5)+'"></path>';
+    loopMid = {x:(x7c+x8c)/2, y:yUnder};
+  }
 
   el.wires.setAttribute("viewBox","0 0 "+W+" "+FULL);
   el.wires.setAttribute("width",W);
@@ -1285,6 +1330,15 @@ function render(){
       }
       runStart = a;
     }
+  }
+
+  if (loopMid){
+    var lt = document.createElement("div");
+    lt.className = "loop-tag";
+    lt.textContent = "Revise price \u00b7 scope \u00b7 timing \u00b7 rights";
+    lt.style.left = loopMid.x + "px";
+    lt.style.top = (loopMid.y - 9) + "px";
+    el.canvas.appendChild(lt);
   }
 
   var fb = -1;
@@ -1484,10 +1538,25 @@ function wire(w){
           '<div class="wf-btn">Submit drafts</div>';
       break;
     case "links":
+      var fl = (typeof w.flag === "number") ? w.flag : -1;
       b = '<div class="wf-list" style="flex:1">'+f.map(function(t,i){
-            return '<div class="wf-li"><div class="wf-fld" style="border:0;padding:0;background:transparent">'+t+'</div>'+
-                   '<div class="wf-tag">'+(i%2?"Set":"Live")+'</div></div>'; }).join("")+
-          '</div><div class="wf-btn">Grant access</div>';
+            var warn = (i === fl);
+            return '<div class="wf-li'+(warn?" warn":"")+'">'+
+                   '<div class="wf-fld" style="border:0;padding:0;background:transparent">'+t+'</div>'+
+                   '<div class="wf-tag'+(warn?" warn":"")+'">'+(warn?"Missing":(i%2?"Set":"Live"))+'</div></div>'; }).join("")+
+          '</div><div class="wf-btn'+(fl>-1?" blocked":"")+'">'+(w.cta||"Grant access")+(fl>-1?" \u2014 blocked":"")+'</div>';
+      break;
+
+    case "compare":
+      b = '<div class="wf-cmp"><div class="wf-cmp-h"><span></span>'+
+          (w.cols||[]).map(function(c){ return '<b>'+c+'</b>'; }).join("")+'</div>'+
+          (w.rows||[]).map(function(r){
+            var best = Math.max(r[1],r[2],r[3]);
+            return '<div class="wf-cmp-r"><span>'+r[0]+'</span>'+
+              [r[1],r[2],r[3]].map(function(v){
+                return '<em><i class="'+(v===best?"on":"")+'" style="width:'+v+'%"></i></em>';
+              }).join("")+'</div>';
+          }).join("")+'</div>';
       break;
     case "chart":
       if (w.rows){
