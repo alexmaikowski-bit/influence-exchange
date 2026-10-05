@@ -26,6 +26,7 @@
   --paid:#9D7CFF;      --paid-rgb:157 124 255;
   --gold:#FFD63D; --gold-rgb:255 214 61;
   --loop:#8B9AAF;
+  --bill:#FF6FB5; --bill-rgb:255 111 181;
 
   --grad:linear-gradient(100deg,#3D8BFF 0%,#22E0F0 46%,#00F08A 100%);
 
@@ -124,6 +125,7 @@
   --paid:#6D28D9;      --paid-rgb:109 40 217;
   --gold:#B45309; --gold-line:#D97706; --gold-rgb:217 119 6;
   --loop:#64748B;
+  --bill:#BE185D; --bill-rgb:190 24 93;
   --grad:linear-gradient(100deg,#1554D6 0%,#0E7490 46%,#047857 100%);
 
   /* depth here is rings and soft tinted shadow, never glow */
@@ -204,6 +206,44 @@ body{
 .util svg{display:block}
 .util:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
 
+/* ---------- the view switch: MVP pilot vs ideal state ---------- */
+.view{
+  display:flex;align-items:center;gap:2px;margin-left:6px;
+  background:var(--card);border:1px solid var(--rule-hi);border-radius:999px;padding:3px;
+  box-shadow:var(--node-sh);
+}
+.view-lab{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dim);padding:0 6px 0 9px;
+}
+.view button{
+  appearance:none;border:0;cursor:pointer;background:transparent;
+  font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--mute);
+  padding:7px 15px;border-radius:999px;white-space:nowrap;
+  transition:color .18s,background .18s;
+}
+.view button:hover{color:var(--text);background:var(--hover)}
+.view button[aria-pressed="true"]{background:var(--grad);color:var(--on-accent);box-shadow:var(--primary-sh)}
+.view button:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
+.view-note{
+  position:absolute;top:53px;left:15px;right:15px;z-index:11;pointer-events:none;
+  display:flex;align-items:center;flex-wrap:wrap;gap:6px 16px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--mute);
+}
+.view-note b{color:var(--title);font-weight:700}
+.legend{display:flex;align-items:center;gap:12px;padding-left:16px;border-left:1px solid var(--rule-hi)}
+.legend:empty{display:none}
+.legend > em{font-style:normal;color:var(--dim)}
+.rk{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.rk i,.run i{width:7px;height:7px;border-radius:50%;background:var(--rk);flex:0 0 7px}
+.rk[data-run="manual"] i,.run[data-run="manual"] i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--rk)}
+[data-run="platform"]{--rk:var(--wpp)}
+[data-run="goat"]{--rk:var(--creator)}
+[data-run="manual"]{--rk:var(--mute)}
+[data-run="prisma"]{--rk:var(--bill)}
+@media (max-width:980px){.utils-title,.utils-sep{display:none}}
+
 .dock-nav{margin-left:auto;display:flex;gap:6px}
 .navbtn{
   appearance:none;cursor:pointer;
@@ -275,6 +315,7 @@ body{
   transition:background .25s;
 }
 .rail-txt{display:flex;flex-direction:column;gap:5px;min-width:0}
+.rail-org{font-style:normal;font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-bottom:-2px}
 .rail-count{
   font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--dim);white-space:nowrap;
@@ -336,6 +377,16 @@ body{
 .node[aria-current="true"]::before{opacity:1;box-shadow:0 0 20px 2px var(--nc)}
 .node[aria-current="true"] .t{color:var(--title)}
 .node.branch{border-style:dashed;background:var(--branch-bg)}
+.run{
+  display:inline-flex;align-items:center;gap:6px;margin-top:3px;
+  font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--mute);
+}
+.bill{
+  position:absolute;right:9px;bottom:-9px;z-index:2;
+  font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--bill);background:var(--ground);border:1px solid var(--bill);border-radius:999px;padding:1px 8px;
+}
 .node.branch .t{font-weight:500}
 .node.done{opacity:.62}
 .node.done .t{font-weight:500}
@@ -543,6 +594,18 @@ path.flow.live{animation:march 1s linear infinite}
   color:var(--gold);font-weight:700;flex:0 0 auto;
 }
 .callout p{margin:0;font-size:13px;font-weight:600;color:var(--callout-fg);line-height:1.36}
+#dBill:empty{display:none}
+.callout.billnote{
+  background:linear-gradient(95deg, rgb(var(--bill-rgb) / 13%), rgb(var(--bill-rgb) / 3%) 66%, transparent), var(--card);
+  border-color:rgb(var(--bill-rgb) / 35%);border-left-color:var(--bill);box-shadow:none;
+}
+.callout.billnote .cmark{color:var(--bill)}
+.callout.billnote p{color:var(--text);font-weight:500}
+.ph-run:empty{display:none}
+.ph-run{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--rk);white-space:nowrap}
+.ph-run i{width:7px;height:7px;border-radius:50%;background:var(--rk)}
+.ph-run[data-run="manual"] i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--rk)}
 
 /* the handoff is the payload of the whole diagram — treat it as an object */
 .handoff{
@@ -799,7 +862,7 @@ path.flow.live{animation:march 1s linear infinite}
 .cover-blk.beats > p{color:var(--wpp)}
 .cover-roles{display:flex;flex-direction:column;gap:11px}
 .cover-role{
-  display:grid;grid-template-columns:12px minmax(0,186px) minmax(0,1fr);
+  display:grid;grid-template-columns:12px minmax(0,250px) minmax(0,1fr);
   align-items:center;gap:0 15px;
   font-size:16px;font-weight:500;color:var(--title);
 }
@@ -817,6 +880,14 @@ path.flow.live{animation:march 1s linear infinite}
   border-radius:4px;padding:10px 18px;white-space:nowrap;
 }
 .cover-arrow{color:var(--wpp);font-size:17px;font-weight:700}
+.cover-blk.views{flex:1 1 100%}
+.cover-views{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.cover-view{border:1px solid var(--rule-hi);border-radius:5px;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+.cover-view b{font-family:var(--disp);font-size:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--title)}
+.cover-view span{font-size:13.5px;color:var(--mute);line-height:1.4}
+.cover-view.on{border-color:var(--wpp);background:linear-gradient(160deg, rgb(var(--wpp-rgb) / 10%), transparent)}
+.cover-view.on b::after{content:"Opens first";margin-left:10px;font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.16em;color:var(--wpp);vertical-align:2px}
 .cover-go{
   display:flex;align-items:center;gap:28px;flex-wrap:wrap;
   border-top:1px solid var(--rule);padding-top:28px;
@@ -842,7 +913,7 @@ path.flow.live{animation:march 1s linear infinite}
   <div class="sheet-in" id="sheetIn">
     <button class="sheet-close" id="sheetClose" type="button" aria-label="Close">&times;</button>
     <span class="eyebrow">Influence Exchange &middot; operating flow</span>
-    <h2 class="sheet-h">The fifteen steps</h2>
+    <h2 class="sheet-h" id="sheetH">The steps</h2>
     <p class="sheet-sub">Color shows who acts. Click any step to open it.</p>
     <div class="sheet-cols" id="sheetCols"></div>
   </div>
@@ -858,6 +929,13 @@ path.flow.live{animation:march 1s linear infinite}
         <p>Four roles, four lanes</p>
         <div class="cover-roles" id="coverRoles"></div>
       </div>
+      <div class="cover-blk views">
+        <p>Two views of the same flow</p>
+        <div class="cover-views">
+          <div class="cover-view on"><b>MVP pilot</b><span>Where we start. WPP-managed and curated: 2&ndash;3 hand-picked partners, brought in through Goat&rsquo;s creator campaigns.</span></div>
+          <div class="cover-view"><b>Ideal state</b><span>The longer-term exchange. Publishers self-serve, and more WPP buyers get access.</span></div>
+        </div>
+      </div>
       <div class="cover-blk beats">
         <p>Five beats of a deal</p>
         <div class="cover-acts">
@@ -871,7 +949,7 @@ path.flow.live{animation:march 1s linear infinite}
     </div>
     <div class="cover-go">
       <button class="ctrl primary" id="coverGo" type="button">Open the flow</button>
-      <span class="cover-hint">or click anywhere, then click any step</span>
+      <span class="cover-hint">click any step &middot; switch views top left</span>
     </div>
   </div>
 </div>
@@ -886,7 +964,13 @@ path.flow.live{animation:march 1s linear infinite}
       <button class="util" id="themeBtn" type="button"></button>
       <span class="utils-sep"></span>
       <span class="utils-title">WPP Influence Exchange</span>
+      <div class="view" id="viewSw" role="group" aria-label="Choose a view">
+        <span class="view-lab">View</span>
+        <button type="button" data-view="mvp" aria-pressed="true">MVP pilot</button>
+        <button type="button" data-view="ideal" aria-pressed="false">Ideal state</button>
+      </div>
     </div>
+    <div class="view-note" id="viewNote"></div>
     <div class="rail" id="rail"></div>
     <div class="scroller" id="scroller">
       <div class="canvas" id="canvas">
@@ -899,7 +983,7 @@ path.flow.live{animation:march 1s linear infinite}
     <button class="nudge r" id="nudgeR" type="button" aria-label="Scroll right">&#8250;</button>
     <div class="hint" id="hint">
       <button class="hint-x" id="hintX" type="button" aria-label="Dismiss">&times;</button>
-      <span class="hint-main">15 steps &middot; click any one to see what happens</span>
+      <span class="hint-main" id="hintMain">11 steps &middot; click any one to see what happens</span>
       <em class="hint-sub">scroll right for the rest &rarr;</em>
     </div>
   </div>
@@ -914,6 +998,8 @@ path.flow.live{animation:march 1s linear infinite}
         <span class="ph-actor" id="dActor"></span>
         <span class="ph-sep"></span>
         <span class="ph-act" id="dAct"></span>
+        <span class="ph-sep" id="dRunSep"></span>
+        <span class="ph-run" id="dRun"></span>
         <span class="dock-nav">
           <button class="navbtn" id="prevBtn" type="button" aria-label="Previous step">&larr;</button>
           <button class="navbtn" id="nextBtn" type="button" aria-label="Next step">&rarr;</button>
@@ -935,6 +1021,7 @@ path.flow.live{animation:march 1s linear infinite}
       </div>
 
       <div class="func">
+        <div id="dBill"></div>
         <button class="func-toggle" id="funcToggle" type="button" aria-expanded="false">
           <span class="ft-chev">&rsaquo;</span>
           <span class="ft-lab">Functionality required</span>
@@ -958,14 +1045,20 @@ path.flow.live{animation:march 1s linear infinite}
 var LANES = {
   publisher:{label:"Publisher",          v:"--publisher"},
   creator:  {label:"Creator",            v:"--creator"},
-  wpp:      {label:"WPP Media",          v:"--wpp"},
+  wpp:      {label:"Strategy, creator & content", org:"WPP Media", short:"WPP Media", v:"--wpp"},
   client:   {label:"Client / brand",     v:"--client"},
-  paid:     {label:"Paid & measurement", v:"--paid"},
+  paid:     {label:"Paid & measurement", org:"WPP Media", v:"--paid"},
   brandA:   {label:"Brand / IP holder",  v:"--publisher"},
   brandB:   {label:"Counterparty brand", v:"--client"}
 };
 /* every color is read back out of the cascade, so a theme flip needs no
    second set of values in here */
+var RUN = {
+  platform:{label:"Platform",    say:"Platform \u2014 what the MVP has to build or buy"},
+  goat:    {label:"Goat process", say:"Goat / Obviously\u2019s existing creator process"},
+  manual:  {label:"By hand",     say:"WPP by hand \u2014 no platform needed yet"},
+  prisma:  {label:"Prisma",      say:"WPP Media billing (Prisma)"}
+};
 var CS = getComputedStyle(document.documentElement);
 function cssVar(n){ return CS.getPropertyValue(n).trim(); }
 function isLight(){ return cssVar("--mode") === "light"; }
@@ -1026,6 +1119,7 @@ var BUY = [
  wf:{kind:"thread",name:"Quote & scope",fields:["Availability confirmed","Price v2","Rights window","Exception raised"]}},
 
 {n:"09",act:"Agree",lens:["deal"],lane:"client",title:"Client approves, parties contract",
+ bill:"The IO is set up in Prisma against the approved spend.",
  action:"Client approves spend and scope; the parties execute the required paperwork.",
  out:"Contracted scope, rights, dates and payment terms retained against the campaign.",
  func:["Approval status","Documents / e-sign or upload","Rights tracking"],
@@ -1061,15 +1155,93 @@ var BUY = [
 {n:"14",plan:["Performance / delivery"],act:"Measure",lens:["conn", "data"],lane:"paid",title:"Team measures performance",
  action:"Collects organic and paid results and reports against the campaign KPIs.",
  out:"Comparable publisher and creator results retained.",
- func:["Data / API ingestion","Common metrics","Reporting & export","Insights & reporting connector"],
+ func:["Data / API ingestion","Common metrics","Reporting & export","Insights & reporting connector","Demand signals: which brands buy from which properties"],
  callout:"Publisher and creator results, finally on the same metrics.",
  wf:{kind:"chart",name:"Performance",fields:["Organic","Paid","vs KPI"]}},
 
 {n:"15",plan:["Performance / delivery"],act:"Measure",lens:["deal"],lane:"paid",title:"Team reconciles, closes",
  action:"Verifies contracted delivery and reconciles invoices and payment.",
  out:"Delivery and financial status recorded; campaign closed.",
- func:["Delivery tracking","Invoice & payment status","Finance handoff","Repeat bookings"],
+ bill:"Clients are invoiced through WPP Media billing (Prisma). Still to define: how publisher and platform invoices flow in.",
+ func:["Delivery tracking","Invoice & payment status","Finance handoff (Prisma)","Repeat bookings"],
  wf:{kind:"chart",name:"Reconciliation",rows:["Delivered","Invoiced","Paid","Closed"]}}
+];
+
+/* ---- MVP pilot: WPP-managed, 2-3 curated partners, through Goat's creator mix ---- */
+var MVP = [
+{n:"01",act:"Set up",lane:"wpp",run:"manual",title:"WPP picks pilot partners",
+ action:"Strategy, creator and content leads choose 2–3 partners against the partner checklist: social-first or emerging properties that can turn custom content around fast.",
+ out:"A short pilot roster, each partner with a named WPP owner.",
+ func:["Partner checklist","Pilot roster","Named WPP owner per partner"],
+ callout:"2–3 partners, not every partner. Social-first and emerging properties first; the big leagues later.",
+ wf:{kind:"review",name:"Partner checklist",fields:["Existing commercial deal","Immediate brand demand","Fast custom content","Investment fit"],cta:"Add to pilot"}},
+
+{n:"02",act:"Set up",lane:"wpp",co:"publisher",run:"manual",title:"WPP co-creates the offer",
+ action:"WPP works through the offer with each partner: formats, channels, audience, lead times and rights. WPP negotiates a fair-market rate.",
+ out:"An agreed offer and rate card, built by WPP with the partner.",
+ func:["Offer template","Fair-market rate card","Rights & exclusions","Partner sign-off"],
+ callout:"Publishers work like wholesalers, not marketplace sellers. WPP builds the offer with them.",
+ wf:{kind:"thread",name:"Offer working session",fields:["Formats: Reels, TikTok, carousel","Rate: fair-market, agreed","Lead time: 10 days","Rights: 90-day paid usage"]}},
+
+{n:"03",act:"Set up",lane:"wpp",run:"platform",title:"WPP enters the listing",
+ action:"WPP enters the agreed offer for the partner. In the pilot, publishers don't log in or list anything themselves.",
+ out:"Listing visible to the Goat / Obviously team only, not an open marketplace.",
+ func:["WPP-only listing entry","Publisher profile that works like a creator profile","Visibility: Goat / Obviously only"],
+ wf:{kind:"form",name:"Enter listing",fields:["Partner","Format","Channel","Agreed rate","Lead time","Rights & exclusions"]}},
+
+{n:"04",act:"Match",lane:"wpp",run:"platform",title:"Goat adds the publisher to the creator mix",
+ action:"When Goat / Obviously builds a creator recommendation for a campaign, the pilot publishers appear in the same mix, on comparable numbers.",
+ out:"A curated recommendation: creators and publishers side by side.",
+ func:["Search & filter","Side-by-side comparison","Comparable audience data","Connector: Goat / Obviously discovery"],
+ callout:"Publishers come in through Goat's creator campaigns first, not through a separate buying desk.",
+ wf:{kind:"compare",name:"Creator mix",cols:["Publisher","Creator","Creator"],
+     rows:[["Audience fit",78,62,55],["Performance",58,84,61],["Formats",80,70,66],["Commercial terms",66,72,80]]}},
+
+{n:"05",act:"Match",lane:"client",run:"goat",title:"Brand picks",
+ action:"The brand reviews the curated shortlist, the same way it picks Goat creators today, and makes its choice.",
+ out:"Selection recorded against the campaign.",
+ func:["Client-facing shortlist","Selection record"],
+ wf:{kind:"grid",name:"Shortlist",fields:["3 options shared"],tags:["Selected","Option","Option"],cta:"Record selection"}},
+
+{n:"06",act:"Agree",lane:"wpp",co:"publisher",run:"goat",title:"Brief sent, scope confirmed",
+ action:"Goat briefs the publisher. The publisher confirms deliverables, dates and rights within the offer already agreed.",
+ out:"Scope confirmed at the agreed rate. The rate was set at step 02, so little is left to negotiate.",
+ func:["Brief","Scope confirmation","Change log"],
+ wf:{kind:"form",name:"Campaign brief",fields:["Objective","Deliverables & post count","Dates","Requested rights"]}},
+
+{n:"07",act:"Agree",lane:"client",co:"wpp",run:"goat",title:"Contract signed, IO set up",
+ action:"The publisher signs Goat's standard creator contract. The client approves the spend, and WPP sets up the IO in Prisma.",
+ out:"Contract and IO on file, and the buy exists in WPP's finance system.",
+ func:["Goat creator contract","Spend approval","IO set up in Prisma"],
+ bill:"The IO is set up in Prisma against the approved spend, the same way a buy is set up today.",
+ callout:"It's the same contract a Goat creator signs. The pilot needs no new paperwork.",
+ wf:{kind:"doc",name:"Contract & IO",fields:["Goat creator agreement","Spend approved","IO set up in Prisma","Payment terms"]}},
+
+{n:"08",act:"Make",lane:"publisher",run:"goat",title:"Publisher produces; Goat and brand approve",
+ action:"The publisher's social team makes the content. Goat reviews it first and the brand signs off second.",
+ out:"Two approvals on record; cleared to post.",
+ func:["Draft upload","Two-stage approval","Comments & versions"],
+ wf:{kind:"review",name:"Approvals",fields:["Goat review — cleared","Brand sign-off — pending","Version 2"],cta:"Clear to post"}},
+
+{n:"09",act:"Make",lane:"publisher",run:"goat",title:"Publisher posts, grants paid access",
+ action:"Posts on the agreed handles and dates, then hands over live links and paid-usage permission.",
+ out:"One activation-ready asset for the paid team.",
+ func:["Live links","Paid authorization & expiry","Readiness check"],
+ wf:{kind:"links",name:"Live links & rights",fields:["Post URL","Paid authorization","Usage window","Expiry"]}},
+
+{n:"10",act:"Measure",lane:"paid",run:"platform",title:"Paid amplifies and measures",
+ action:"WPP Media's paid team runs the post within the usage rights and reports organic and paid results alongside the creators' results.",
+ out:"Publisher results on the same metrics as the creators in the mix.",
+ func:["Media-platform handoff","Common metrics","Reporting"],
+ callout:"The real test of the pilot: does publisher content hold up next to creators?",
+ wf:{kind:"chart",name:"Performance",fields:["Organic","Paid","vs KPI"]}},
+
+{n:"11",act:"Measure",lane:"paid",run:"prisma",title:"Invoiced through Prisma, closed",
+ action:"WPP Media bills the client through Prisma against the IO. The publisher is paid off-platform, through Goat's existing creator process.",
+ out:"Campaign closed, with a read on which partners to keep, add or drop.",
+ func:["Delivery check","Invoice against the IO","Publisher payment status","Pilot learnings"],
+ bill:"Clients are invoiced through Prisma. Still to define: how publisher invoices flow into WPP Media billing (Jessica, Bryce, Ella).",
+ wf:{kind:"chart",name:"Close",rows:["Delivered","Invoiced — Prisma","Publisher paid","Closed"]}}
 ];
 
 /* ---- Phase 1b: the optional creator branch ---- */
@@ -1149,7 +1321,12 @@ var EXCHANGE = [
 ];
 
 var PHASES = [
-  {id:"buy", num:"Phase 1", tab:"Buy publisher content", status:"Core MVP", tc:"--publisher",
+  {id:"mvp", tab:"MVP pilot", sheet:"MVP pilot \u00b7 eleven steps", legend:true,
+   note:"<b>Where we start</b><span>WPP-managed &middot; 2&ndash;3 curated partners &middot; publishers join Goat&rsquo;s creator mix</span>",
+   lanes:["publisher","wpp","client","paid"], steps:MVP},
+
+  {id:"ideal", tab:"Ideal state", sheet:"Ideal state \u00b7 fifteen steps", loop:["07","08"],
+   note:"<b>Ideal state &middot; longer term</b><span>Publishers self-serve &middot; open to more WPP buyers &middot; later, brands and IP partner directly</span>", num:"Phase 1", tab:"Buy publisher content", status:"Core MVP", tc:"--publisher",
    title:"A new way to transact with publishers by buying content",
    flag:"Assumes WPP-managed buying — buyer access and independence to be confirmed",
    lanes:["publisher","wpp","client","paid"], steps:BUY},
@@ -1184,7 +1361,7 @@ function defs(){
 }
 
 /* ---------------- geometry ---------------- */
-var COL = 212, NW = 188, PADX = 28, PADY = 16, PADT = 50;
+var COL = 212, NW = 188, PADX = 28, PADY = 18, PADT = 84;
 var LANE_H = 92, NH = 60, OFFY = 0, ACT_H = 26;
 
 function laneTop(i){ return OFFY + PADT + ACT_H + i*LANE_H; }
@@ -1196,7 +1373,7 @@ var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","listBtn","sheet","sheetIn","sheetClose","sheetCols","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+["dBill","viewSw","viewNote","sheetH","dRun","dRunSep","board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","listBtn","sheet","sheetIn","sheetClose","sheetCols","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dAct","dPlan","dNext","dBody","funcToggle","funcBody","funcCount"].forEach(function(k){ el[k] = document.getElementById(k); });
 
@@ -1234,7 +1411,8 @@ function render(){
     d.style.height = LANE_H+"px";
     d.style.setProperty("--lc","var("+LANES[k].v+")");
     var n = steps.filter(function(st){ return st.lane === k || st.co === k; }).length;
-    d.innerHTML = '<div class="rail-bar"></div><div class="rail-txt"><span>'+LANES[k].label+'</span>'+
+    d.innerHTML = '<div class="rail-bar"></div><div class="rail-txt">'+
+                  (LANES[k].org ? '<em class="rail-org">'+LANES[k].org+'</em>' : '')+'<span>'+LANES[k].label+'</span>'+
                   '<span class="rail-count">'+n+' step'+(n===1?'':'s')+'</span></div>';
     el.rail.appendChild(d);
   });
@@ -1285,7 +1463,7 @@ function render(){
   /* the negotiation round-trip: a back edge from 08 to 07, routed under the lane
      so it never crosses the forward path */
   var i7 = -1, i8 = -1;
-  steps.forEach(function(st,i){ if (st.n === "07") i7 = i; if (st.n === "08") i8 = i; });
+  if (phase.loop) steps.forEach(function(st,i){ if (st.n === phase.loop[0]) i7 = i; if (st.n === phase.loop[1]) i8 = i; });
   var loopMid = null;
   if (i7 > -1 && i8 > -1){
     var l7 = lanes.indexOf(steps[i7].lane), l8 = lanes.indexOf(steps[i8].lane);
@@ -1318,6 +1496,8 @@ function render(){
     b.style.setProperty("--nc","var("+LANES[s.lane].v+")");
     b.setAttribute("data-i", i);
     b.innerHTML = '<span class="n">'+s.n+'</span><span class="t">'+s.title+'</span>'+
+                  (s.run ? '<span class="run" data-run="'+s.run+'"><i></i>'+RUN[s.run].label+'</span>' : '')+
+                  (s.bill ? '<span class="bill">Billing &middot; Prisma</span>' : '')+
                   (s.callout ? '<span class="star"></span>' : '')+
                   '<span class="peek"><b>Hands over</b><span>'+s.out+'</span>'+
                   (s.callout ? '<u>&#9733; '+s.callout+'</u>' : '')+'</span>';
@@ -1332,7 +1512,7 @@ function render(){
         g.style.left = nodeX(i)+"px";
         g.style.top = (nodeY(ci)+(NH-26)/2)+"px";
         g.style.setProperty("--nc","var("+LANES[s.co].v+")");
-        g.innerHTML = '<i>with '+LANES[s.co].label+'</i>';
+        g.innerHTML = '<i>with '+(LANES[s.co].short || LANES[s.co].label)+'</i>';
         el.canvas.appendChild(g);
       }
     }
@@ -1446,7 +1626,11 @@ function select(i, scroll){
   el.dock.style.setProperty("--nc", c);
   el.dock.style.setProperty("--nc-rgb", cssVar(LANES[s.lane].v+"-rgb") || "140 150 170");
   el.dNum.textContent = "Step "+s.n;
-  el.dActor.textContent = LANES[s.lane].label + (s.co ? " + "+LANES[s.co].label : "");
+  el.dActor.textContent = LANES[s.lane].label + (s.co ? " + "+(LANES[s.co].short || LANES[s.co].label) : "");
+  el.dRun.setAttribute("data-run", s.run || "");
+  el.dRun.innerHTML = s.run ? '<i></i>Pilot runs on: '+RUN[s.run].label : '';
+  el.dRunSep.hidden = !s.run;
+  el.dRun.title = s.run ? RUN[s.run].say : '';
   el.dTitle.textContent = s.title;
   el.dAction.textContent = s.action;
   el.dOut.textContent = s.out;
@@ -1464,6 +1648,9 @@ function select(i, scroll){
     : '';
   el.dCallout.innerHTML = s.callout
     ? '<div class="callout"><span class="cmark">&#9733; Why it matters</span><p>'+s.callout+'</p></div>'
+    : '';
+  el.dBill.innerHTML = s.bill
+    ? '<div class="callout billnote"><span class="cmark">Billing &middot; Prisma</span><p>'+s.bill+'</p></div>'
     : '';
   el.dWire.style.setProperty("--nc", c);
   el.dWire.innerHTML =
@@ -1649,8 +1836,8 @@ el.gatePw.addEventListener("input", function(){ el.gateErr.hidden = true; });
   d.className = "cover-role";
   d.style.setProperty("--rc","var("+LANES[k].v+")");
   d.style.setProperty("--rc-rgb", cssVar(LANES[k].v+"-rgb"));
-  var says = {publisher:"lists what it can make",wpp:"finds it and briefs it",
-              client:"approves and pays",paid:"amplifies and reports"};
+  var says = {publisher:"makes the content",wpp:"WPP Media \u00b7 curates, co-creates, briefs",
+              client:"picks, approves and pays",paid:"WPP Media \u00b7 amplifies, reports, bills"};
   d.innerHTML = "<i></i>" + LANES[k].label + "<u>" + says[k] + "</u>";
   el.coverRoles.appendChild(d);
 });
@@ -1711,7 +1898,7 @@ function buildSheet(){
     });
   });
 }
-function openSheet(){ buildSheet(); el.sheet.hidden = false; el.sheetClose.focus(); }
+function openSheet(){ el.sheetH.textContent = phase.sheet; buildSheet(); el.sheet.hidden = false; el.sheetClose.focus(); }
 function closeSheet(){ el.sheet.hidden = true; }
 el.listBtn.addEventListener("click", openSheet);
 el.sheetClose.addEventListener("click", closeSheet);
@@ -1769,7 +1956,32 @@ if (window.ResizeObserver){
   }).observe(el.board);
 }
 
+/* ---------------- view: MVP pilot / ideal state ---------------- */
+function syncView(){
+  Array.prototype.forEach.call(el.viewSw.querySelectorAll("button"), function(b){
+    b.setAttribute("aria-pressed", b.getAttribute("data-view") === phase.id ? "true" : "false");
+  });
+  el.viewNote.innerHTML = phase.note +
+    '<span class="legend">' + (phase.legend
+      ? '<em>Pilot runs on</em>' + ["platform","goat","manual","prisma"].map(function(k){
+          return '<span class="rk" data-run="'+k+'" title="'+RUN[k].say+'"><i></i>'+RUN[k].label+'</span>'; }).join("")
+      : '') + '</span>';
+  document.getElementById("hintMain").innerHTML = phase.steps.length + " steps &middot; click any one to see what happens";
+}
+function setView(v){
+  var next = v === "ideal" ? PHASES[1] : PHASES[0];
+  if (next === phase) return;
+  phase = next; cur = -1;
+  el.scroller.scrollLeft = 0;
+  syncView();
+  render();
+}
+Array.prototype.forEach.call(el.viewSw.querySelectorAll("button"), function(b){
+  b.addEventListener("click", function(){ setView(b.getAttribute("data-view")); });
+});
+
 syncThemeBtn();
+syncView();
 render();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
