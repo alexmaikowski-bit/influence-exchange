@@ -1103,7 +1103,7 @@ var RUN = {
   platform:{label:"Platform",    say:"Platform \u2014 what the MVP has to build or buy"},
   goat:    {label:"Goat process", say:"Goat / Obviously\u2019s existing creator process"},
   manual:  {label:"By hand",     say:"WPP by hand \u2014 no platform needed yet"},
-  prisma:  {label:"Prisma",      say:"WPP Media billing (Prisma)"}
+  prisma:  {label:"Prisma",      say:"WPP Media billing (Prisma)"} /* ideal state only */
 };
 var CS = getComputedStyle(document.documentElement);
 function cssVar(n){ return CS.getPropertyValue(n).trim(); }
@@ -1165,7 +1165,7 @@ var BUY = [
  wf:{kind:"thread",name:"Quote & scope",fields:["Availability confirmed","Price v2","Rights window","Exception raised"]}},
 
 {n:"09",act:"Agree",lens:["deal"],lane:"client",title:"Client approves, parties contract",
- bill:"The IO is set up in Prisma against the approved spend.",
+ bill:"Prisma integration: the IO is created in Prisma against the approved spend, from the platform.",
  action:"Client approves spend and scope; the parties execute the required paperwork.",
  out:"Contracted scope, rights, dates and payment terms retained against the campaign.",
  func:["Approval status","Documents / e-sign or upload","Rights tracking"],
@@ -1208,7 +1208,7 @@ var BUY = [
 {n:"15",plan:["Performance / delivery"],act:"Measure",lens:["deal"],lane:"paid",title:"Team reconciles, closes",
  action:"Verifies contracted delivery and reconciles invoices and payment.",
  out:"Delivery and financial status recorded; campaign closed.",
- bill:"Clients are invoiced through WPP Media billing (Prisma). Still to define: how publisher and platform invoices flow in.",
+ bill:"Prisma integration: clients are invoiced through WPP Media billing. Still to define: how publisher and platform invoices flow in (Jessica, Bryce, Ella).",
  func:["Delivery tracking","Invoice & payment status","Finance handoff (Prisma)","Repeat bookings"],
  wf:{kind:"chart",name:"Reconciliation",rows:["Delivered","Invoiced","Paid","Closed"]}}
 ];
@@ -1256,12 +1256,11 @@ var MVP = [
  wf:{kind:"form",name:"Campaign brief",fields:["Objective","Deliverables & post count","Dates","Requested rights"]}},
 
 {n:"07",act:"Agree",lane:"client",co:"wpp",run:"goat",title:"Contract signed, IO set up",
- action:"The publisher signs Goat's standard creator contract. The client approves the spend, and WPP sets up the IO in Prisma.",
- out:"Contract and IO on file, and the buy exists in WPP's finance system.",
- func:["Goat creator contract","Spend approval","IO set up in Prisma"],
- bill:"The IO is set up in Prisma against the approved spend, the same way a buy is set up today.",
+ action:"The publisher signs Goat's standard creator contract. The client approves the spend, and WPP raises the IO the way it does today.",
+ out:"Contract and IO on file, with no new systems involved.",
+ func:["Goat creator contract","Spend approval","IO through today's process"],
  callout:"It's the same contract a Goat creator signs. The pilot needs no new paperwork.",
- wf:{kind:"doc",name:"Contract & IO",fields:["Goat creator agreement","Spend approved","IO set up in Prisma","Payment terms"]}},
+ wf:{kind:"doc",name:"Contract & IO",fields:["Goat creator agreement","Spend approved","IO raised as today","Payment terms"]}},
 
 {n:"08",act:"Make",lane:"publisher",run:"goat",title:"Publisher produces; Goat and brand approve",
  action:"The publisher's social team makes the content. Goat reviews it first and the brand signs off second.",
@@ -1282,12 +1281,12 @@ var MVP = [
  callout:"The real test of the pilot: does publisher content hold up next to creators?",
  wf:{kind:"chart",name:"Performance",fields:["Organic","Paid","vs KPI"]}},
 
-{n:"11",act:"Measure",lane:"paid",run:"prisma",title:"Invoiced through Prisma, closed",
- action:"WPP Media bills the client through Prisma against the IO. The publisher is paid off-platform, through Goat's existing creator process.",
+{n:"11",act:"Measure",lane:"paid",run:"manual",title:"Billed and closed",
+ action:"WPP Media bills the client the way it does today, outside the platform. The publisher is paid through Goat's existing creator process.",
  out:"Campaign closed, with a read on which partners to keep, add or drop.",
- func:["Delivery check","Invoice against the IO","Publisher payment status","Pilot learnings"],
- bill:"Clients are invoiced through Prisma. Still to define: how publisher invoices flow into WPP Media billing (Jessica, Bryce, Ella).",
- wf:{kind:"chart",name:"Close",rows:["Delivered","Invoiced — Prisma","Publisher paid","Closed"]}}
+ func:["Delivery check","Billing as today, off-platform","Publisher payment status","Pilot learnings"],
+ callout:"No finance integration in the pilot. Prisma connects in the ideal state.",
+ wf:{kind:"chart",name:"Close",rows:["Delivered","Billed \u2014 as today","Publisher paid","Closed"]}}
 ];
 
 /* ---- Phase 1b: the optional creator branch ---- */
