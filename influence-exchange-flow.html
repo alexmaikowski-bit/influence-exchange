@@ -89,6 +89,7 @@
   --primary-sh-h:0 0 34px -4px #22E0F0;
   --cover-bg:rgb(4 6 11 / 95%);
   --role-dot-sh:0 0 12px 1px var(--rc);
+  --scrim:rgb(4 6 11 / 62%);
 }
 
 /* Light is a design, not an inversion. Dark is this page's own world and stays
@@ -175,6 +176,7 @@
   --primary-sh-h:0 8px 22px -8px #0E7490;
   --cover-bg:rgb(233 237 243 / 95%);
   --role-dot-sh:0 0 0 3px rgb(var(--rc-rgb) / 20%);
+  --scrim:rgb(233 237 243 / 70%);
 }
 
 *{box-sizing:border-box}
@@ -837,7 +839,7 @@ path.flow.live{animation:march 1s linear infinite}
   padding:clamp(18px,4vh,40px) 28px;cursor:pointer;
 }
 .cover[hidden]{display:none}
-.cover-in{max-width:1040px;width:100%;text-align:left;margin:auto}
+.cover-in{max-width:960px;width:100%;text-align:left;margin:auto}
 .eyebrow{
   display:block;font-family:var(--mono);font-weight:500;font-size:10.5px;
   letter-spacing:.28em;text-transform:uppercase;color:var(--dim);
@@ -882,7 +884,9 @@ path.flow.live{animation:march 1s linear infinite}
   border-radius:4px;padding:clamp(7px,1.3vh,10px) 18px;white-space:nowrap;
 }
 .cover-arrow{color:var(--wpp);font-size:17px;font-weight:700}
-.cover-views{display:flex;flex-direction:column;gap:10px}
+.cover-blk.views{grid-column:1 / -1}
+.cover-views{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:760px){.cover-views{grid-template-columns:minmax(0,1fr)}}
 .cover-view{border:1px solid var(--rule-hi);border-radius:5px;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
 .cover-view b{font-family:var(--disp);font-size:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--title)}
 .cover-view span{font-size:14.5px;color:var(--mute);line-height:1.4}
@@ -899,6 +903,44 @@ path.flow.live{animation:march 1s linear infinite}
 }
 #coverGo{animation:cta-pulse 2.3s ease-in-out infinite;font-size:13px;padding:12px 26px}
 #coverGo:hover{animation-play-state:paused}
+.scrim{position:absolute;inset:0;z-index:12;background:var(--scrim)}
+.primer{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:13;
+  width:min(780px, calc(100% - 48px));max-height:calc(100% - 32px);overflow:auto;
+  background:var(--card);border:1px solid var(--wpp);border-radius:8px;
+  padding:clamp(18px,3vh,28px) 32px clamp(18px,3vh,26px);
+  box-shadow:0 0 0 1px var(--wpp), 0 0 70px -16px var(--wpp), 0 30px 70px -30px #000;
+}
+.primer-h{font-family:var(--disp);font-weight:800;font-size:clamp(20px,2.8vh,25px);letter-spacing:-.025em;
+  line-height:1.15;color:var(--title);margin:8px 0 clamp(14px,2.6vh,22px);padding-right:30px}
+.primer-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px 40px}
+@media (max-width:720px){.primer-grid{grid-template-columns:minmax(0,1fr)}}
+.primer-lab{font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--mute);margin:0 0 12px}
+.primer-keys{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(9px,1.6vh,13px)}
+.primer-keys li{display:grid;grid-template-columns:156px minmax(0,1fr);gap:12px;align-items:center;
+  font-size:14.5px;color:var(--action);line-height:1.35}
+.primer-keys li > span:first-child{display:flex;align-items:center;flex-wrap:wrap;gap:4px 9px}
+.pk-star{width:14px;height:14px;background:var(--gold-line);filter:var(--star-sh);
+  clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%)}
+.pk-bill{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bill);border:1px solid var(--bill);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.pk-ghost{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);
+  border:1px dashed var(--mute);border-radius:3px;padding:2px 8px;white-space:nowrap}
+.pk-loop{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--loop);
+  border:1px dashed var(--loop);border-radius:3px;padding:2px 8px;white-space:nowrap}
+.primer-keys .rk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.primer-go{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-top:clamp(16px,2.8vh,24px);
+  padding-top:clamp(14px,2.4vh,20px);border-top:1px solid var(--rule)}
+.primer-x{position:absolute;top:14px;right:14px;appearance:none;cursor:pointer;width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:var(--chip-bg);border:1px solid var(--rule-hi);
+  color:var(--text);font-size:20px;line-height:1;transition:all .18s}
+.primer-x:hover{color:var(--void);background:var(--wpp);border-color:var(--wpp)}
+.primer-x:focus-visible,.hint-how:focus-visible{outline:2px solid var(--wpp);outline-offset:2px}
+.hint{pointer-events:auto}
+.hint-how{appearance:none;cursor:pointer;background:transparent;border:0;border-left:1px solid var(--chip-br);
+  margin-left:4px;padding:0 0 0 12px;font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--wpp)}
+.hint-how:hover{text-decoration:underline}
 .cover-hint{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--mute)}
 </style>
 
@@ -926,10 +968,6 @@ path.flow.live{animation:march 1s linear infinite}
     <h2>Influence Exchange</h2>
     <p class="lede">The <b>first and only</b> creator-discovery platform that also provides access to <b>premium IP</b> &mdash; with the production and transaction ease of a creator buy. The creator economy is built around individual creators; Influence Exchange opens it to <b>any entity that can create content and lend credibility</b>.</p>
     <div class="cover-grid">
-      <div class="cover-blk">
-        <p>Four roles, four lanes</p>
-        <div class="cover-roles" id="coverRoles"></div>
-      </div>
       <div class="cover-blk views">
         <p>Two views of the same flow</p>
         <div class="cover-views">
@@ -986,7 +1024,28 @@ path.flow.live{animation:march 1s linear infinite}
       <button class="hint-x" id="hintX" type="button" aria-label="Dismiss">&times;</button>
       <span class="hint-main" id="hintMain">11 steps &middot; click any one to see what happens</span>
       <em class="hint-sub">scroll right for the rest &rarr;</em>
+      <button class="hint-how" id="hintHow" type="button">How to read this</button>
     </div>
+    <div class="scrim" id="scrim" hidden></div>
+    <section class="primer" id="primer" role="dialog" aria-labelledby="primerH" hidden>
+      <button class="primer-x" id="primerX" type="button" aria-label="Close">&times;</button>
+      <span class="eyebrow">How to read the flow</span>
+      <h3 class="primer-h" id="primerH">Each row is a role. Each card is a step, read left to right.</h3>
+      <div class="primer-grid">
+        <div>
+          <p class="primer-lab">Four roles, four lanes</p>
+          <div class="cover-roles" id="coverRoles"></div>
+        </div>
+        <div>
+          <p class="primer-lab">On the cards</p>
+          <ul class="primer-keys" id="primerKeys"></ul>
+        </div>
+      </div>
+      <div class="primer-go">
+        <button class="ctrl primary" id="primerGo" type="button">Show me the flow</button>
+        <span class="cover-hint">then click any step to open it</span>
+      </div>
+    </section>
   </div>
 
   <section class="dock" id="dock" aria-live="polite" hidden>
@@ -1374,7 +1433,7 @@ var lastAvail = -1, settling = false;
 var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 var el = {};
-["dBill","viewSw","viewNote","sheetH","dRun","dRunSep","board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","listBtn","sheet","sheetIn","sheetClose","sheetCols","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
+["primer","primerX","primerGo","primerKeys","scrim","hintHow","dBill","viewSw","viewNote","sheetH","dRun","dRunSep","board","dock","dockClose","hint","hintX","nudgeL","nudgeR","themeBtn","gate","gateForm","gatePw","gateErr","guideBtn","listBtn","sheet","sheetIn","sheetClose","sheetCols","cover","coverRoles","coverGo","rail","canvas","scroller","wires",
  "prevBtn","nextBtn","dNum","dActor","dTitle","dAction","dOut",
  "dFunc","dWire","dCallout","dAct","dPlan","dNext","dBody","funcToggle","funcBody","funcCount"].forEach(function(k){ el[k] = document.getElementById(k); });
 
@@ -1608,6 +1667,7 @@ function select(i, scroll){
 
   el.dock.hidden = none;
   el.hint.hidden = !none;
+  if (!none && el.primer && !el.primer.hidden) closePrimer();
   if (!none) demoteHint();
 
   Array.prototype.forEach.call(el.canvas.querySelectorAll(".node"), function(n){
@@ -1719,7 +1779,8 @@ document.addEventListener("keydown", function(e){
   if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   if (!el.gate.hidden) return;
   if (!el.sheet.hidden){ if (e.key === "Escape") closeSheet(); return; }
-  if (!el.cover.hidden){ el.cover.hidden = true; return; }
+  if (!el.cover.hidden){ hideCover(); return; }
+  if (!el.primer.hidden){ if (e.key === "Escape" || e.key === "Enter") closePrimer(); return; }
   if (e.key === "Escape" && cur >= 0){ select(-1,false); return; }
   if (e.key === "ArrowRight"){ if (cur<phase.steps.length-1) select(cur+1,true); }
   else if (e.key === "ArrowLeft"){ if (cur>0) select(cur-1,true); }
@@ -1887,7 +1948,31 @@ function demoteHint(){
   clearTimeout(hintTimer);
   el.hint.classList.remove("big");
 }
-function hideCover(){ el.cover.hidden = true; promoteHint(); }
+function hideCover(){ el.cover.hidden = true; openPrimer(); }
+
+/* ---------------- primer: how to read the board ---------------- */
+function buildKeys(){
+  var runs = ["platform","goat","manual","prisma"].map(function(k){
+    return '<span class="rk" data-run="'+k+'"><i></i>'+RUN[k].label+'</span>'; }).join("");
+  var rows = [
+    ['<span class="pk-star"></span>', "Why it matters \u2014 the point of the step"],
+    ['<span class="pk-ghost">With &hellip;</span>', "A second party works on the step"],
+    ['<span class="pk-bill">Billing &middot; Prisma</span>', "Where money moves"]
+  ];
+  if (phase.legend) rows.splice(1, 0, [runs, "What the pilot runs on"]);
+  if (phase.loop) rows.push(['<span class="pk-loop">Revise</span>', "A negotiation loop between two steps"]);
+  el.primerKeys.innerHTML = rows.map(function(r){ return '<li><span>'+r[0]+'</span><span>'+r[1]+'</span></li>'; }).join("");
+}
+function openPrimer(){
+  buildKeys();
+  el.scrim.hidden = false; el.primer.hidden = false;
+  el.primerGo.focus();
+}
+function closePrimer(){ el.scrim.hidden = true; el.primer.hidden = true; }
+el.primerX.addEventListener("click", closePrimer);
+el.primerGo.addEventListener("click", closePrimer);
+el.scrim.addEventListener("click", closePrimer);
+el.hintHow.addEventListener("click", function(e){ e.stopPropagation(); openPrimer(); });
 
 /* ---------------- all steps, as a list ---------------- */
 var ICON_LIST =
