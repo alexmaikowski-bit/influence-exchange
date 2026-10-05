@@ -629,6 +629,12 @@ path.flow.live{animation:march 1s linear infinite}
   border-color:rgb(var(--bill-rgb) / 35%);border-left-color:var(--bill);box-shadow:none;
 }
 .callout.billnote .cmark{color:var(--bill)}
+.callout.valnote{
+  background:linear-gradient(95deg, rgb(var(--creator-rgb) / 12%), rgb(var(--creator-rgb) / 3%) 66%, transparent), var(--card);
+  border:1px solid rgb(var(--creator-rgb) / 35%);border-left:3px solid var(--creator);box-shadow:none;
+}
+.callout.valnote .cmark{color:var(--creator)}
+.callout.valnote p{color:var(--text);font-weight:500}
 .callout.billnote p{color:var(--text);font-weight:500}
 .ph-run:empty{display:none}
 .ph-run{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:700;
@@ -982,7 +988,7 @@ path.flow.live{animation:march 1s linear infinite}
       <div class="cover-blk views">
         <p>Two views of the same flow</p>
         <div class="cover-views">
-          <div class="cover-view on"><b>MVP pilot</b><span>Where we start. WPP-managed and curated: 2&ndash;3 hand-picked partners, brought in through Goat&rsquo;s creator campaigns.</span></div>
+          <div class="cover-view on"><b>MVP pilot</b><span>Where we start. WPP-managed and curated: 1&ndash;2 hand-picked partners, brought in through Goat&rsquo;s creator campaigns.</span></div>
           <div class="cover-view"><b>Ideal state</b><span>The longer-term exchange. Publishers self-serve, and more WPP buyers get access.</span></div>
         </div>
       </div>
@@ -1208,7 +1214,7 @@ var BUY = [
 {n:"15",plan:["Performance / delivery"],act:"Measure",lens:["deal"],lane:"paid",title:"Team reconciles, closes",
  action:"Verifies contracted delivery and reconciles invoices and payment.",
  out:"Delivery and financial status recorded; campaign closed.",
- bill:"Prisma integration: clients are invoiced through WPP Media billing. Still to define: how publisher and platform invoices flow in (Jessica, Bryce, Ella).",
+ bill:"Prisma integration: clients are invoiced through WPP Media billing. Still to work through: how publisher invoices feed in, and what the finance integration involves (Jessica, Bryce, Ella).",
  func:["Delivery tracking","Invoice & payment status","Finance handoff (Prisma)","Repeat bookings"],
  wf:{kind:"chart",name:"Reconciliation",rows:["Delivered","Invoiced","Paid","Closed"]}}
 ];
@@ -1216,10 +1222,10 @@ var BUY = [
 /* ---- MVP pilot: WPP-managed, 2-3 curated partners, through Goat's creator mix ---- */
 var MVP = [
 {n:"01",act:"Set up",lane:"wpp",run:"manual",title:"WPP picks pilot partners",
- action:"Strategy, creator and content leads choose 2–3 partners against the partner checklist: social-first or emerging properties that can turn custom content around fast.",
+ action:"Strategy, creator and content leads choose 1–2 partners against the partner checklist: social-first or emerging properties that can turn custom content around fast.",
  out:"A short pilot roster, each partner with a named WPP owner.",
  func:["Partner checklist","Pilot roster","Named WPP owner per partner"],
- callout:"2–3 partners, not every partner. Social-first and emerging properties first; the big leagues later.",
+ callout:"1–2 partners, not every partner. Social-first and emerging properties first; larger sports properties later.",
  wf:{kind:"review",name:"Partner checklist",fields:["Existing commercial deal","Immediate brand demand","Fast custom content","Investment fit"],cta:"Add to pilot"}},
 
 {n:"02",act:"Set up",lane:"wpp",co:"publisher",run:"manual",title:"WPP co-creates the offer",
@@ -1233,13 +1239,15 @@ var MVP = [
  action:"WPP enters the agreed offer for the partner. In the pilot, publishers don't log in or list anything themselves.",
  out:"Listing visible to the Goat / Obviously team only, not an open marketplace.",
  func:["WPP-only listing entry","Publisher profile that works like a creator profile","Visibility: Goat / Obviously only"],
+ validate:"Whether listings need a vendor platform or can start in an existing tool.",
  wf:{kind:"form",name:"Enter listing",fields:["Partner","Format","Channel","Agreed rate","Lead time","Rights & exclusions"]}},
 
 {n:"04",act:"Match",lane:"wpp",run:"platform",title:"Goat adds the publisher to the creator mix",
- action:"When Goat / Obviously builds a creator recommendation for a campaign, the pilot publishers appear in the same mix, on comparable numbers.",
+ action:"When Goat / Obviously builds a creator recommendation for a campaign, the pilot publishers appear in the same mix, with numbers as comparable as the data allows.",
  out:"A curated recommendation: creators and publishers side by side.",
  func:["Search & filter","Side-by-side comparison","Comparable audience data","Connector: Goat / Obviously discovery"],
  callout:"Publishers come in through Goat's creator campaigns first, not through a separate buying desk.",
+ validate:"Whether publisher and creator metrics can be made comparable, and whether Goat's current tools can show publishers in the mix before any new connector.",
  wf:{kind:"compare",name:"Creator mix",cols:["Publisher","Creator","Creator"],
      rows:[["Audience fit",78,62,55],["Performance",58,84,61],["Formats",80,70,66],["Commercial terms",66,72,80]]}},
 
@@ -1251,7 +1259,7 @@ var MVP = [
 
 {n:"06",act:"Agree",lane:"wpp",co:"publisher",run:"goat",title:"Brief sent, scope confirmed",
  action:"Goat briefs the publisher. The publisher confirms deliverables, dates and rights within the offer already agreed.",
- out:"Scope confirmed at the agreed rate. The rate was set at step 02, so little is left to negotiate.",
+ out:"Scope confirmed at the rate agreed in step 02. Any publisher-specific terms are noted as exceptions.",
  func:["Brief","Scope confirmation","Change log"],
  wf:{kind:"form",name:"Campaign brief",fields:["Objective","Deliverables & post count","Dates","Requested rights"]}},
 
@@ -1259,7 +1267,7 @@ var MVP = [
  action:"The publisher signs Goat's standard creator contract. The client approves the spend, and WPP raises the IO the way it does today.",
  out:"Contract and IO on file, with no new systems involved.",
  func:["Goat creator contract","Spend approval","IO through today's process"],
- callout:"It's the same contract a Goat creator signs. The pilot needs no new paperwork.",
+ callout:"Goat's existing creator contract is the starting point. The pilot shows where publishers need exceptions.",
  wf:{kind:"doc",name:"Contract & IO",fields:["Goat creator agreement","Spend approved","IO raised as today","Payment terms"]}},
 
 {n:"08",act:"Make",lane:"publisher",run:"goat",title:"Publisher produces; Goat and brand approve",
@@ -1276,16 +1284,18 @@ var MVP = [
 
 {n:"10",act:"Measure",lane:"paid",run:"platform",title:"Paid amplifies and measures",
  action:"WPP Media's paid team runs the post within the usage rights and reports organic and paid results alongside the creators' results.",
- out:"Publisher results on the same metrics as the creators in the mix.",
+ out:"A read on how publisher results compare with the creators in the mix.",
  func:["Media-platform handoff","Common metrics","Reporting"],
  callout:"The real test of the pilot: does publisher content hold up next to creators?",
+ validate:"Whether results can sit on common metrics, and how much can run through the paid team's existing tools or manual reporting.",
  wf:{kind:"chart",name:"Performance",fields:["Organic","Paid","vs KPI"]}},
 
 {n:"11",act:"Measure",lane:"paid",run:"manual",title:"Billed and closed",
  action:"WPP Media bills the client the way it does today, outside the platform. The publisher is paid through Goat's existing creator process.",
  out:"Campaign closed, with a read on which partners to keep, add or drop.",
  func:["Delivery check","Billing as today, off-platform","Publisher payment status","Pilot learnings"],
- callout:"No finance integration in the pilot. Prisma connects in the ideal state.",
+ callout:"Billing stays on today's process for the pilot.",
+ open:"How publisher invoices feed into WPP Media billing, and what a future finance integration would involve.",
  wf:{kind:"chart",name:"Close",rows:["Delivered","Billed \u2014 as today","Publisher paid","Closed"]}}
 ];
 
@@ -1367,7 +1377,7 @@ var EXCHANGE = [
 
 var PHASES = [
   {id:"mvp", tab:"MVP pilot", sheet:"MVP pilot \u00b7 eleven steps", legend:true,
-   note:"<b>Where we start</b><span>WPP-managed &middot; 2&ndash;3 curated partners &middot; publishers join Goat&rsquo;s creator mix</span>",
+   note:"<b>Where we start</b><span>WPP-managed &middot; 1&ndash;2 curated partners &middot; publishers join Goat&rsquo;s creator mix</span>",
    lanes:["publisher","wpp","client","paid"], steps:MVP},
 
   {id:"ideal", tab:"Ideal state", sheet:"Ideal state \u00b7 fifteen steps", loop:["07","08"],
@@ -1724,9 +1734,12 @@ function select(i, scroll){
   el.dCallout.innerHTML = s.callout
     ? '<div class="callout"><span class="cmark">&#9733; Why it matters</span><p>'+s.callout+'</p></div>'
     : '';
-  el.dBill.innerHTML = s.bill
-    ? '<div class="callout billnote"><span class="cmark">Billing &middot; Prisma</span><p>'+s.bill+'</p></div>'
-    : '';
+  el.dBill.innerHTML = (s.bill
+    ? '<div class="callout billnote"><span class="cmark">Billing &middot; Prisma</span><p>'+s.bill+'</p></div>' : '') +
+    (s.validate
+    ? '<div class="callout valnote"><span class="cmark">To validate in vendor demos</span><p>'+s.validate+'</p></div>' : '') +
+    (s.open
+    ? '<div class="callout valnote"><span class="cmark">Still to work through</span><p>'+s.open+'</p></div>' : '');
   el.dWire.style.setProperty("--nc", c);
   el.dWire.innerHTML =
     '<div class="pane-head"><span class="ph-lab">Indicative screen</span></div>'+ wire(s.wf);
