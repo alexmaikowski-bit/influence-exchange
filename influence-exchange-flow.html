@@ -991,7 +991,7 @@ path.flow.live{animation:march 1s linear infinite}
       <div class="cover-blk views">
         <p>Two views of the same flow</p>
         <div class="cover-views">
-          <div class="cover-view on"><b>MVP pilot</b><span>Where we start. WPP-managed and curated: 1&ndash;2 hand-picked partners, brought in through Goat&rsquo;s creator campaigns.</span></div>
+          <div class="cover-view on"><b>MVP pilot</b><span>Where we start. WPP-managed and curated: 1&ndash;2 hand-picked partners per priority vertical, brought in through Goat&rsquo;s creator campaigns.</span></div>
           <div class="cover-view"><b>Ideal state</b><span>The longer-term exchange. Publishers self-serve, and more WPP buyers get access.</span></div>
         </div>
       </div>
@@ -1228,13 +1228,13 @@ var BUY = [
  wf:{kind:"chart",name:"Reconciliation",rows:["Delivered","Invoiced","Paid","Closed"]}}
 ];
 
-/* ---- MVP pilot: WPP-managed, 2-3 curated partners, through Goat's creator mix ---- */
+/* ---- MVP pilot: WPP-managed, 1-2 curated partners per priority vertical, through Goat's creator mix ---- */
 var MVP = [
 {n:"01",act:"Set up",lane:"wpp",run:"manual",title:"WPP picks pilot partners",
- action:"Strategy, creator and content leads choose 1–2 partners against the partner checklist: social-first or emerging properties that can turn custom content around fast.",
+ action:"Strategy, creator and content leads choose 1–2 partners per priority vertical against the partner checklist: social-first or emerging properties that can turn custom content around fast.",
  out:"A short pilot roster, each partner with a named WPP owner.",
  func:["Partner checklist","Pilot roster","Named WPP owner per partner"],
- callout:"1–2 partners, not every partner. Social-first and emerging properties first; larger sports properties later.",
+ callout:"1–2 partners per priority vertical, not every partner. Social-first and emerging properties first; larger sports properties later.",
  wf:{kind:"review",name:"Partner checklist",fields:["Existing commercial deal","Immediate brand demand","Fast custom content","Investment fit"],cta:"Add to pilot"}},
 
 {n:"02",act:"Set up",lane:"wpp",co:"publisher",run:"platform",title:"WPP builds the offer with the publisher",
@@ -1395,7 +1395,7 @@ var EXCHANGE = [
 
 var PHASES = [
   {id:"mvp", tab:"MVP pilot", sheet:"MVP pilot \u00b7 twelve steps", legend:true, loop:["05","06"],
-   note:"<b>Where we start</b><span>WPP-managed &middot; 1&ndash;2 curated partners &middot; publishers join Goat&rsquo;s creator mix</span>",
+   note:"<b>Where we start</b><span>WPP-managed &middot; 1&ndash;2 curated partners per priority vertical &middot; publishers join Goat&rsquo;s creator mix</span>",
    lanes:["publisher","wpp","client","paid"], steps:MVP},
 
   {id:"ideal", tab:"Ideal state", sheet:"Ideal state \u00b7 fifteen steps", loop:["07","08"],
